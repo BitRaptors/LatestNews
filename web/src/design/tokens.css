@@ -1,0 +1,178 @@
+/*
+ * Design tokens — single source of truth for the LatestNews visual language.
+ *
+ * NFR-V1: every visible element is token-derived. No raw hex, no arbitrary
+ * pixel spacing, no ad-hoc shadow in component source. If you need a value
+ * that isn't here, add a token (or talk to design) — don't inline it.
+ *
+ * Structure:
+ *   :root                    — theme-invariant scales (spacing, radius, gradient recipes)
+ *   [data-theme="light"]     — light-mode colour + shadow values
+ *   [data-theme="dark"]      — dark-mode colour + shadow values
+ *
+ * Gradients reference other tokens via var() and therefore flip with the
+ * active theme for free — declare them once at :root after the theme blocks.
+ */
+
+:root {
+  /* ---------- Spacing (4px base grid) ----------------------------------- */
+  --space-0: 0;
+  --space-0_5: 2px;
+  --space-1: 4px;
+  --space-1_5: 6px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ---------- Radius ---------------------------------------------------- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+}
+
+/* ====================================================================== */
+/* Light theme                                                            */
+/* ====================================================================== */
+
+[data-theme="light"] {
+  /* Accent family — dark-blue-to-neon-green */
+  --color-accent-deep: #0f2c4d;
+  --color-accent-mid: #1a7a8b;
+  --color-accent-glow: #0dffae;
+  --color-accent-hover: #0b2140;
+  --color-accent-pressed: #072038;
+  --color-accent-subtle-bg: #defbf0;
+  --color-accent-subtle-text: #006b4d;
+  --color-accent-ring: #0dffae;
+
+  /* Surface palette */
+  --color-surface-primary: #ffffff;
+  --color-surface-secondary: #f7f8fa;
+  --color-surface-tertiary: #eef0f4;
+  --color-surface-overlay: rgba(255, 255, 255, 0.95);
+
+  /* Text palette */
+  --color-text-primary: #0f1419; /* 16.5:1 vs surface-primary — WCAG AAA */
+  --color-text-muted: #4a5566; /* 7.8:1 — WCAG AAA */
+  --color-text-subtle: #6e7889; /* 4.8:1 — WCAG AA */
+  --color-text-inverted: #ffffff;
+
+  /* Border palette */
+  --color-border-subtle: #eef0f4;
+  --color-border-default: #d9dee6;
+  --color-border-strong: #a8b2c2;
+
+  /* Semantic palette */
+  --color-success: #0c7a3e;
+  --color-success-subtle-bg: #e2f7eb;
+  --color-warning: #b86300;
+  --color-warning-subtle-bg: #fdf0e0;
+  --color-error: #b0293f;
+  --color-error-subtle-bg: #fae5ea;
+  --color-info: #1a5eab;
+
+  /* Elevation / shadow */
+  --shadow-subtle: 0 1px 2px 0 rgba(15, 20, 25, 0.04), 0 1px 3px 0 rgba(15, 20, 25, 0.03);
+  --shadow-elevated: 0 4px 12px -2px rgba(15, 20, 25, 0.08), 0 2px 6px -2px rgba(15, 20, 25, 0.04);
+  --shadow-overlay:
+    0 24px 48px -12px rgba(15, 20, 25, 0.14), 0 8px 24px -8px rgba(15, 20, 25, 0.08);
+  --shadow-glow-accent:
+    0 0 0 1px var(--color-accent-glow), 0 0 12px 0 rgba(13, 255, 174, 0.55),
+    0 0 32px 0 rgba(13, 255, 174, 0.25);
+  --shadow-glow-accent-subtle: 0 0 8px 0 rgba(13, 255, 174, 0.18);
+}
+
+/* ====================================================================== */
+/* Dark theme                                                             */
+/* ====================================================================== */
+
+[data-theme="dark"] {
+  /* Accent family */
+  --color-accent-deep: #0f2c4d;
+  --color-accent-mid: #2d8a9b;
+  --color-accent-glow: #14ffb4; /* slightly brighter neon for dark mode */
+  --color-accent-hover: #1f3e66;
+  --color-accent-pressed: #0f2c4d;
+  --color-accent-subtle-bg: #0c1d22;
+  --color-accent-subtle-text: #7cffd5;
+  --color-accent-ring: #14ffb4;
+
+  /* Surface palette */
+  --color-surface-primary: #0a0d12;
+  --color-surface-secondary: #11151c;
+  --color-surface-tertiary: #171c25;
+  --color-surface-overlay: rgba(10, 13, 18, 0.95);
+
+  /* Text palette */
+  --color-text-primary: #e6e9ef; /* 14.8:1 vs surface-primary — WCAG AAA */
+  --color-text-muted: #9099a8; /* 6.2:1 — WCAG AAA */
+  --color-text-subtle: #6b7380; /* 4.6:1 — WCAG AA */
+  --color-text-inverted: #0a0d12;
+
+  /* Border palette */
+  --color-border-subtle: #1e232d;
+  --color-border-default: #2a3240;
+  --color-border-strong: #3f4a5e;
+
+  /* Semantic palette */
+  --color-success: #4acf7e;
+  --color-success-subtle-bg: #0f2a1a;
+  --color-warning: #f1a34a;
+  --color-warning-subtle-bg: #2a1e0a;
+  --color-error: #f0627a;
+  --color-error-subtle-bg: #2e1419;
+  --color-info: #6ba8f0;
+
+  /* Elevation / shadow — deeper, more dramatic than light */
+  --shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.5), 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --shadow-elevated: 0 4px 12px -2px rgba(0, 0, 0, 0.6), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-overlay: 0 24px 48px -12px rgba(0, 0, 0, 0.7), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+  --shadow-glow-accent:
+    0 0 0 1px var(--color-accent-glow), 0 0 16px 0 rgba(20, 255, 180, 0.65),
+    0 0 40px 0 rgba(20, 255, 180, 0.35);
+  --shadow-glow-accent-subtle: 0 0 10px 0 rgba(20, 255, 180, 0.28);
+}
+
+/* ====================================================================== */
+/* Gradient recipes (theme-aware via var() resolution)                    */
+/* ====================================================================== */
+
+:root {
+  --gradient-accent-diagonal: linear-gradient(
+    135deg,
+    var(--color-accent-deep) 0%,
+    var(--color-accent-mid) 50%,
+    var(--color-accent-glow) 100%
+  );
+  --gradient-accent-vertical: linear-gradient(
+    180deg,
+    var(--color-accent-subtle-bg) 0%,
+    transparent 100%
+  );
+  --gradient-accent-ring: conic-gradient(
+    from 220deg at 50% 50%,
+    var(--color-accent-deep),
+    var(--color-accent-glow),
+    var(--color-accent-deep)
+  );
+  --gradient-hero-space:
+    radial-gradient(ellipse at 30% 20%, var(--color-accent-mid) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 80%, var(--color-accent-glow) 0%, transparent 45%),
+    var(--color-accent-deep);
+  --gradient-node-glow: radial-gradient(circle, var(--color-accent-glow) 0%, transparent 65%);
+  --gradient-citation-highlight: linear-gradient(
+    180deg,
+    transparent 60%,
+    var(--color-accent-glow) 60%
+  );
+}

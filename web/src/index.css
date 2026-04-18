@@ -1,18 +1,113 @@
-:root {
-  color-scheme: light dark;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+/*
+ * Application entry stylesheet.
+ *
+ * Layer order matters:
+ *   1. tokens.css declares CSS custom properties under [data-theme].
+ *   2. Tailwind v4 is imported, producing the base layer + utility engine.
+ *   3. @theme inline { ... } maps our tokens onto Tailwind's theme slots,
+ *      so utility classes like bg-surface-primary / text-accent-glow /
+ *      shadow-elevated / rounded-md resolve to our values. `inline` is
+ *      required — it makes Tailwind substitute var(...) at use-site so the
+ *      utilities flip correctly when [data-theme] changes on <html>.
+ */
+
+@import "./design/tokens.css";
+@import "tailwindcss";
+
+/* Keep `dark:` variant working even though we drive theming via [data-theme]
+   rather than a `dark` class. Enables e.g. `dark:shadow-glow-accent` when a
+   future component wants explicitly dark-only styling beyond token flip. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  /* Colours */
+  --color-accent-deep: var(--color-accent-deep);
+  --color-accent-mid: var(--color-accent-mid);
+  --color-accent-glow: var(--color-accent-glow);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-pressed: var(--color-accent-pressed);
+  --color-accent-subtle-bg: var(--color-accent-subtle-bg);
+  --color-accent-subtle-text: var(--color-accent-subtle-text);
+  --color-accent-ring: var(--color-accent-ring);
+
+  --color-surface-primary: var(--color-surface-primary);
+  --color-surface-secondary: var(--color-surface-secondary);
+  --color-surface-tertiary: var(--color-surface-tertiary);
+  --color-surface-overlay: var(--color-surface-overlay);
+
+  --color-text-primary: var(--color-text-primary);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-subtle: var(--color-text-subtle);
+  --color-text-inverted: var(--color-text-inverted);
+
+  --color-border-subtle: var(--color-border-subtle);
+  --color-border-default: var(--color-border-default);
+  --color-border-strong: var(--color-border-strong);
+
+  --color-success: var(--color-success);
+  --color-success-subtle-bg: var(--color-success-subtle-bg);
+  --color-warning: var(--color-warning);
+  --color-warning-subtle-bg: var(--color-warning-subtle-bg);
+  --color-error: var(--color-error);
+  --color-error-subtle-bg: var(--color-error-subtle-bg);
+  --color-info: var(--color-info);
+
+  /* Spacing — Tailwind's utility engine reads --spacing-* for padding /
+     margin / gap, so alias our --space-* names onto that prefix while keeping
+     the source-of-truth names in tokens.css. */
+  --spacing-0: var(--space-0);
+  --spacing-0_5: var(--space-0_5);
+  --spacing-1: var(--space-1);
+  --spacing-1_5: var(--space-1_5);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
+  --spacing-10: var(--space-10);
+  --spacing-12: var(--space-12);
+  --spacing-16: var(--space-16);
+  --spacing-20: var(--space-20);
+  --spacing-24: var(--space-24);
+
+  /* Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+
+  /* Shadow */
+  --shadow-subtle: var(--shadow-subtle);
+  --shadow-elevated: var(--shadow-elevated);
+  --shadow-overlay: var(--shadow-overlay);
+  --shadow-glow-accent: var(--shadow-glow-accent);
+  --shadow-glow-accent-subtle: var(--shadow-glow-accent-subtle);
+}
+
+/* Base element styles driven by tokens. Proves the token system applies. */
+html {
+  background: var(--color-surface-primary);
+  color: var(--color-text-primary);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Smooth the visual flip on subsequent theme changes (story 1.5+). The
+     initial apply happens before paint so there's no flicker on boot. */
+  transition:
+    background-color var(--duration-base, 220ms) ease,
+    color var(--duration-base, 220ms) ease;
 }
 
 main {
   display: grid;
   place-items: center;
   min-height: 100vh;
-  padding: 2rem;
+  padding: var(--space-8);
 }
 
 h1 {

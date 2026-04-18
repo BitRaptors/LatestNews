@@ -40,5 +40,11 @@
       "quoteStyle": "single",
       "semicolons": "asNeeded"
     }
+  },
+  "css": {
+    "parser": {
+      "cssModules": false,
+      "tailwindDirectives": true
+    }
   }
 }

@@ -1,6 +1,6 @@
 # Story 1.2: Implement design tokens (colours, spacing, radius, shadow)
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -52,88 +52,88 @@ so that every subsequent UI component can consume tokens and light/dark themes w
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Install Tailwind v4 + Vitest toolchain in `web/`** (AC: #1, #11)
-  - [ ] `cd web && npm install tailwindcss@^4 @tailwindcss/vite`
-  - [ ] `cd web && npm install --save-dev vitest @vitest/coverage-v8 @testing-library/react @testing-library/jest-dom @testing-library/user-event happy-dom`
-  - [ ] Update `web/package.json` `test` script: `"test": "vitest run"`
-  - [ ] Optional: add `"test:watch": "vitest"` for local dev — not required by the story
-  - [ ] Update `web/vite.config.ts`:
-    - [ ] Import `tailwindcss from '@tailwindcss/vite'` and add `tailwindcss()` to the `plugins` array
-    - [ ] Add `test: { environment: 'happy-dom', globals: true, setupFiles: ['./src/test-setup.ts'] }` (Vitest config) — **note:** Vite 8 / Vitest 3 share the same config file; this is the standard pattern
-  - [ ] Create `web/src/test-setup.ts` that imports `@testing-library/jest-dom/vitest`
-  - [ ] Update `web/tsconfig.app.json` `compilerOptions.types` to include `"vitest/globals"` alongside `"vite/client"`
-  - [ ] Sanity-check: `npm run typecheck --prefix web` still passes
+- [x] **Task 1: Install Tailwind v4 + Vitest toolchain in `web/`** (AC: #1, #11)
+  - [x] `cd web && npm install tailwindcss@^4 @tailwindcss/vite`
+  - [x] `cd web && npm install --save-dev vitest @vitest/coverage-v8 @testing-library/react @testing-library/jest-dom @testing-library/user-event happy-dom`
+  - [x] Update `web/package.json` `test` script: `"test": "vitest run"`
+  - [x] Optional: add `"test:watch": "vitest"` for local dev — not required by the story
+  - [x] Update `web/vite.config.ts`:
+    - [x] Import `tailwindcss from '@tailwindcss/vite'` and add `tailwindcss()` to the `plugins` array
+    - [x] Add `test: { environment: 'happy-dom', globals: true, setupFiles: ['./src/test-setup.ts'] }` (Vitest config) — **note:** Vite 8 / Vitest 3 share the same config file; this is the standard pattern
+  - [x] Create `web/src/test-setup.ts` that imports `@testing-library/jest-dom/vitest`
+  - [x] Update `web/tsconfig.app.json` `compilerOptions.types` to include `"vitest/globals"` alongside `"vite/client"`
+  - [x] Sanity-check: `npm run typecheck --prefix web` still passes
 
-- [ ] **Task 2: Author `web/src/design/tokens.css`** (AC: #2, #3, #4, #5, #6)
-  - [ ] Create `web/src/design/` directory
-  - [ ] Write `tokens.css` with the following structure (see Dev Notes → Token value reference for every value):
-    - [ ] Scale tokens declared **outside** any `[data-theme]` selector (`:root` block) — spacing, radius, and any theme-invariant tokens live here
-    - [ ] `[data-theme='light']` block declaring the full colour palette (accent/surface/text/border/semantic), six gradients, and the shadow scale (light variants)
-    - [ ] `[data-theme='dark']` block declaring the same token names with dark values and darker shadows
-  - [ ] Gradient tokens MUST reference other tokens via `var(...)` (not raw hex) so they switch with theme
-  - [ ] File-level comment block explains: "Single source of truth for visual language — no raw hex/spacing in JSX or component CSS (NFR-V1)."
+- [x] **Task 2: Author `web/src/design/tokens.css`** (AC: #2, #3, #4, #5, #6)
+  - [x] Create `web/src/design/` directory
+  - [x] Write `tokens.css` with the following structure (see Dev Notes → Token value reference for every value):
+    - [x] Scale tokens declared **outside** any `[data-theme]` selector (`:root` block) — spacing, radius, and any theme-invariant tokens live here
+    - [x] `[data-theme='light']` block declaring the full colour palette (accent/surface/text/border/semantic), six gradients, and the shadow scale (light variants)
+    - [x] `[data-theme='dark']` block declaring the same token names with dark values and darker shadows
+  - [x] Gradient tokens MUST reference other tokens via `var(...)` (not raw hex) so they switch with theme
+  - [x] File-level comment block explains: "Single source of truth for visual language — no raw hex/spacing in JSX or component CSS (NFR-V1)."
 
-- [ ] **Task 3: Wire Tailwind `@theme inline`** (AC: #1, #7)
-  - [ ] In `web/src/index.css` (keep the file; rewrite its contents):
-    - [ ] Line 1: `@import "./design/tokens.css";`
-    - [ ] Line 2: `@import "tailwindcss";`
-    - [ ] Add `@theme inline { ... }` block that maps every token to a Tailwind theme slot:
+- [x] **Task 3: Wire Tailwind `@theme inline`** (AC: #1, #7)
+  - [x] In `web/src/index.css` (keep the file; rewrite its contents):
+    - [x] Line 1: `@import "./design/tokens.css";`
+    - [x] Line 2: `@import "tailwindcss";`
+    - [x] Add `@theme inline { ... }` block that maps every token to a Tailwind theme slot:
       - `--color-surface-primary: var(--color-surface-primary);` (and friends)
       - `--color-accent-glow: var(--color-accent-glow);` (and friends)
       - `--spacing-*: var(--space-*);` (Tailwind's `@theme` uses the `--spacing-` prefix for utilities like `p-4`; note the rename)
       - `--radius-*: var(--radius-*);`
       - `--shadow-*: var(--shadow-*);` (Tailwind recognises this prefix for shadow utilities)
-    - [ ] Replace placeholder styles (`h1 { font-weight: 600; letter-spacing: -0.02em; }`, `main { display: grid; place-items: center; min-height: 100vh; padding: 2rem; }`) with token-based base rules:
+    - [x] Replace placeholder styles (`h1 { font-weight: 600; letter-spacing: -0.02em; }`, `main { display: grid; place-items: center; min-height: 100vh; padding: 2rem; }`) with token-based base rules:
       - `body { background: var(--color-surface-primary); color: var(--color-text-primary); margin: 0; min-height: 100vh; }`
       - Layout for `main` can use Tailwind utilities in `App.tsx` instead of global rules; if kept global, use `padding: var(--space-8)` etc.
-  - [ ] Verify `bg-surface-primary`, `text-accent-glow`, `shadow-elevated`, `rounded-md`, `p-4` all resolve correctly at runtime
+  - [x] Verify `bg-surface-primary`, `text-accent-glow`, `shadow-elevated`, `rounded-md`, `p-4` all resolve correctly at runtime
 
-- [ ] **Task 4: Implement theme.ts** (AC: #8)
-  - [ ] Create `web/src/design/theme.ts` with the exported surface specified in AC #8
-  - [ ] Use `const STORAGE_KEY = 'latestnews:theme'`
-  - [ ] Use `const VALID_MODES = ['light', 'dark', 'system'] as const` for type narrowing + defensive runtime validation of localStorage content (corrupted storage → treat as 'system')
-  - [ ] Do **NOT** throw from `applyInitialTheme` — it runs before React mounts; a throw means blank screen. Log-and-continue (console.warn is allowed here because the Biome rule is `noConsole: error` but `console.warn` in a module specifically about runtime boot is defensible; if Biome flags it, use `// biome-ignore lint/suspicious/noConsole: boot diagnostic is intentional` above the single call)
-  - [ ] SSR-safe by design — check `typeof window !== 'undefined'` and `typeof localStorage !== 'undefined'` once at module top or inside the function. For a client-only Vite SPA this is belt-and-braces; do it anyway so `theme.ts` is reusable in a future SSR story without rewrite
-  - [ ] Media-query listener uses `addEventListener('change', handler)` (the legacy `addListener` is deprecated and triggers Biome lint noise)
+- [x] **Task 4: Implement theme.ts** (AC: #8)
+  - [x] Create `web/src/design/theme.ts` with the exported surface specified in AC #8
+  - [x] Use `const STORAGE_KEY = 'latestnews:theme'`
+  - [x] Use `const VALID_MODES = ['light', 'dark', 'system'] as const` for type narrowing + defensive runtime validation of localStorage content (corrupted storage → treat as 'system')
+  - [x] Do **NOT** throw from `applyInitialTheme` — it runs before React mounts; a throw means blank screen. Log-and-continue (console.warn is allowed here because the Biome rule is `noConsole: error` but `console.warn` in a module specifically about runtime boot is defensible; if Biome flags it, use `// biome-ignore lint/suspicious/noConsole: boot diagnostic is intentional` above the single call)
+  - [x] SSR-safe by design — check `typeof window !== 'undefined'` and `typeof localStorage !== 'undefined'` once at module top or inside the function. For a client-only Vite SPA this is belt-and-braces; do it anyway so `theme.ts` is reusable in a future SSR story without rewrite
+  - [x] Media-query listener uses `addEventListener('change', handler)` (the legacy `addListener` is deprecated and triggers Biome lint noise)
 
-- [ ] **Task 5: Wire theme apply at boot** (AC: #9, #10)
-  - [ ] Edit `web/src/main.tsx`:
-    - [ ] Add `import { applyInitialTheme } from './design/theme'`
-    - [ ] Call `applyInitialTheme()` as the first executable statement after imports (before `document.getElementById('root')`)
-  - [ ] Verify in the browser devtools: `document.documentElement.dataset.theme === 'light'` (or `'dark'` if OS is dark) before React has rendered
+- [x] **Task 5: Wire theme apply at boot** (AC: #9, #10)
+  - [x] Edit `web/src/main.tsx`:
+    - [x] Add `import { applyInitialTheme } from './design/theme'`
+    - [x] Call `applyInitialTheme()` as the first executable statement after imports (before `document.getElementById('root')`)
+  - [x] Verify in the browser devtools: `document.documentElement.dataset.theme === 'light'` (or `'dark'` if OS is dark) before React has rendered
 
-- [ ] **Task 6: Contrast / a11y documentation** (AC: #14)
-  - [ ] Create `web/src/design/tokens.md` with a small Markdown table:
-    - [ ] Columns: Token, Light theme, Dark theme, Ratio vs. surface-primary, WCAG level
-    - [ ] Rows for: `--color-text-primary`, `--color-text-muted`, `--color-text-subtle`, `--color-text-inverted` on `--color-accent-deep`
-    - [ ] Reproduce the numbers verbatim from the UX spec (16.5:1 / 7.8:1 / 4.8:1 for light; 14.8:1 / 6.2:1 / 4.6:1 for dark)
+- [x] **Task 6: Contrast / a11y documentation** (AC: #14)
+  - [x] Create `web/src/design/tokens.md` with a small Markdown table:
+    - [x] Columns: Token, Light theme, Dark theme, Ratio vs. surface-primary, WCAG level
+    - [x] Rows for: `--color-text-primary`, `--color-text-muted`, `--color-text-subtle`, `--color-text-inverted` on `--color-accent-deep`
+    - [x] Reproduce the numbers verbatim from the UX spec (16.5:1 / 7.8:1 / 4.8:1 for light; 14.8:1 / 6.2:1 / 4.6:1 for dark)
 
-- [ ] **Task 7: Author contract tests for tokens** (AC: #12)
-  - [ ] Create `web/src/design/__tests__/tokens.test.ts`
-  - [ ] `import tokensCss from '../tokens.css?raw'` (Vite `?raw` loader returns the file as a string)
-  - [ ] For each expected token name, assert `tokensCss.includes('--color-surface-primary')` etc. Use a single `describe` with a parameterised test (`test.each`) over the full list of expected tokens — keeps the test readable as the list grows
-  - [ ] Also assert that each colour token appears **twice** (once per theme block) — regex-count the occurrences of each name
-  - [ ] Assert that the file contains both `[data-theme='light']` and `[data-theme='dark']` selectors
+- [x] **Task 7: Author contract tests for tokens** (AC: #12)
+  - [x] Create `web/src/design/__tests__/tokens.test.ts`
+  - [x] `import tokensCss from '../tokens.css?raw'` (Vite `?raw` loader returns the file as a string)
+  - [x] For each expected token name, assert `tokensCss.includes('--color-surface-primary')` etc. Use a single `describe` with a parameterised test (`test.each`) over the full list of expected tokens — keeps the test readable as the list grows
+  - [x] Also assert that each colour token appears **twice** (once per theme block) — regex-count the occurrences of each name
+  - [x] Assert that the file contains both `[data-theme='light']` and `[data-theme='dark']` selectors
 
-- [ ] **Task 8: Author theme.ts tests** (AC: #13)
-  - [ ] Create `web/src/design/__tests__/theme.test.ts`
-  - [ ] Use `beforeEach` to reset `localStorage`, `document.documentElement.dataset.theme`, and re-stub `window.matchMedia`
-  - [ ] Write tests for each of AC #13's five scenarios; each assertion checks both `localStorage.getItem(...)` **and** `document.documentElement.dataset.theme`
-  - [ ] For the media-query listener test, simulate a `change` event by calling the captured handler with `{ matches: true }` and assert `data-theme` flipped
+- [x] **Task 8: Author theme.ts tests** (AC: #13)
+  - [x] Create `web/src/design/__tests__/theme.test.ts`
+  - [x] Use `beforeEach` to reset `localStorage`, `document.documentElement.dataset.theme`, and re-stub `window.matchMedia`
+  - [x] Write tests for each of AC #13's five scenarios; each assertion checks both `localStorage.getItem(...)` **and** `document.documentElement.dataset.theme`
+  - [x] For the media-query listener test, simulate a `change` event by calling the captured handler with `{ matches: true }` and assert `data-theme` flipped
 
-- [ ] **Task 9: End-to-end validation** (AC: #1, #7, #10, #15)
-  - [ ] `npm run lint` passes (Biome + Ruff)
-  - [ ] `npm run typecheck` passes (tsc strict + mypy strict)
-  - [ ] `npm run test` passes (Vitest + pytest)
-  - [ ] `npm run dev`: browser shows "Hello LatestNews" with correct surface / text colours in both OS theme modes. Toggle via devtools: `document.documentElement.dataset.theme = 'dark'` → visible flip
-  - [ ] Devtools: element inspection of any token-consuming class (e.g. `<body>`) shows the CSS custom property resolving to the expected hex
+- [x] **Task 9: End-to-end validation** (AC: #1, #7, #10, #15)
+  - [x] `npm run lint` passes (Biome + Ruff)
+  - [x] `npm run typecheck` passes (tsc strict + mypy strict)
+  - [x] `npm run test` passes (Vitest + pytest)
+  - [x] `npm run dev`: browser shows "Hello LatestNews" with correct surface / text colours in both OS theme modes. Toggle via devtools: `document.documentElement.dataset.theme = 'dark'` → visible flip
+  - [x] Devtools: element inspection of any token-consuming class (e.g. `<body>`) shows the CSS custom property resolving to the expected hex
 
-- [ ] **Task 10: Commit + push + CI verify** (AC: #15)
-  - [ ] Stage all new/modified files
-  - [ ] Conventional Commits message: `feat(design): implement design tokens + theme infrastructure (Story 1.2)`
-  - [ ] Commit body lists the token categories shipped and confirms scope discipline (no typography, no motion runtime, no shadcn)
-  - [ ] Push to `origin/dev`
-  - [ ] Verify GitHub Actions CI run is green (all 3 jobs)
+- [x] **Task 10: Commit + push + CI verify** (AC: #15)
+  - [x] Stage all new/modified files
+  - [x] Conventional Commits message: `feat(design): implement design tokens + theme infrastructure (Story 1.2)`
+  - [x] Commit body lists the token categories shipped and confirms scope discipline (no typography, no motion runtime, no shadcn)
+  - [x] Push to `origin/dev`
+  - [x] Verify GitHub Actions CI run is green (all 3 jobs)
 
 ## Dev Notes
 
@@ -395,12 +395,66 @@ The `web/src/design/__tests__/` location co-locates tests with the module they t
 
 ### Agent Model Used
 
-(to be filled by dev-story run)
+claude-opus-4-7 (1M context) via Claude Code (BMad `bmad-dev-story` workflow).
 
 ### Debug Log References
 
+- **Tailwind Vite plugin intercepts `.css?raw` imports** — returns empty strings. Switched the token-contract test to `fs.readFileSync` + `import.meta.url` path resolution.
+- **Biome CSS formatter rewrites `'single'` to `"double"` quotes** by default. Aligned tokens.css, index.css, and test selectors on double quotes — semantically identical for CSS attribute selectors.
+- **Biome 2 CSS parser rejects Tailwind directives by default.** Added `"css": { "parser": { "tailwindDirectives": true } }` to `biome.json`.
+- **happy-dom 20's `localStorage` is incomplete.** Replaced with an in-memory `Map`-backed `Storage` mock stubbed onto `window.localStorage` per-test.
+- **Tailwind v4's utility engine uses `--spacing-*`, not `--space-*`.** Aliased source-of-truth `--space-*` names into `--spacing-*` inside `@theme inline` while keeping UX-spec-aligned names in `tokens.css`.
+- **`noConsole: error` required a single `biome-ignore`** on the legitimate `console.warn` in `theme.ts` (corrupt-localStorage diagnostic).
+- **Initial `extractBlock` regex bug** — matched header-comment mentions of the selector. Switched to `selector + \s* + {` regex bound to actual CSS blocks.
+
 ### Completion Notes List
 
+- **Scope held.** No typography (Story 1.3), no motion runtime (Story 1.4), no shadcn (Story 1.4), no routing / AppShell / theme-toggle UI (Story 1.5).
+- **NFR-V1:** every rule in `index.css` uses `var(--…)`; no raw hex / pixel values in frontend source.
+- **NFR-A2:** contrast ratios reproduced verbatim in `web/src/design/tokens.md`; every text/surface pair clears AA, primary text AAA in both themes.
+- **NFR-Q4:** `AGENTS.md` gained a single nested bullet for `web/src/design/` — no other section touched.
+- **Dev-parity verified end-to-end.** `npm run dev` launches both processes; Vite proxy works; served `index.css` bundle contains the full light + dark blocks plus Tailwind's `@layer theme` mirror.
+- **Test count 1 → 75.** 1 backend health + 61 token-contract + 13 theme-behaviour.
+- **Story 1.1 code-review finding M1 resolved** — web `test` script is a real Vitest runner now.
+
 ### File List
+
+**New — design subsystem (`web/src/design/`)**
+
+- `web/src/design/tokens.css`
+- `web/src/design/theme.ts`
+- `web/src/design/tokens.md`
+- `web/src/design/__tests__/tokens.test.ts`
+- `web/src/design/__tests__/theme.test.ts`
+
+**New — test harness**
+
+- `web/src/test-setup.ts`
+
+**Modified — web**
+
+- `web/package.json` (Tailwind v4 + Vitest + RTL + happy-dom deps; `test` → `vitest run`; added `test:watch`)
+- `web/package-lock.json`
+- `web/vite.config.ts` (added `tailwindcss()` plugin + Vitest config + `vitest/config` triple-slash reference)
+- `web/tsconfig.app.json` (added `"vitest/globals"` and `"node"` to `types`)
+- `web/src/main.tsx` (calls `applyInitialTheme()` before `createRoot`)
+- `web/src/index.css` (tokens import + Tailwind import + `@custom-variant` dark + `@theme inline` map + token-based base styles)
+
+**Modified — root**
+
+- `biome.json` (added `css.parser.tailwindDirectives: true`)
+- `AGENTS.md` (one nested bullet pointing at `web/src/design/`)
+
+**Modified — planning artefacts**
+
+- `!DOCS/implementation-artifacts/1-2-implement-design-tokens.md` (status, task checkboxes, Dev Agent Record)
+- `!DOCS/implementation-artifacts/sprint-status.yaml` (1-2 → in-progress → review)
+
+### Change Log
+
+| Date       | Change                                                                                                    |
+|------------|-----------------------------------------------------------------------------------------------------------|
+| 2026-04-18 | Status → `in-progress`. Created `web/src/design/` subsystem.                                              |
+| 2026-04-18 | Tasks 1–10 implemented; 74 web + 1 backend tests green; status → `review` on commit.                      |
 
 ### Change Log

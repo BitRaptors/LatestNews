@@ -22,6 +22,7 @@ no cloud, no account. Obsidian opens the data root as a valid vault.
 ## Repository layout
 
 - `web/` — Vite + React 19 + TypeScript frontend (strict mode).
+  - `web/src/design/` — design tokens, theme switching, motion (source of truth for visual language; NFR-V1).
 - `src/latestnews/` — Python 3.12 + FastAPI backend (async, uv-managed).
   - `api/` — HTTP routers under `/api/*`.
   - `events/`, `models/`, `ingest/`, `processor/`, `providers/`,

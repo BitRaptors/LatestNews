@@ -1,0 +1,27 @@
+{
+  "name": "latestnews",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first personal knowledge web application — root dev orchestration only.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BitRaptors/LatestNews.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "concurrently -n backend,web -c blue,green \"uv run uvicorn latestnews.app:create_app --reload --port 8000 --factory\" \"npm run dev --prefix web\"",
+    "start": "uv run uvicorn latestnews.app:create_app --port 8000 --factory",
+    "build": "npm run build --prefix web",
+    "lint": "biome check . && uv run ruff check src tests",
+    "typecheck": "npm run typecheck --prefix web && uv run mypy src",
+    "test": "npm run test --prefix web && uv run pytest"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.12",
+    "concurrently": "^9.2.1"
+  }
+}

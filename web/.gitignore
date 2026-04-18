@@ -1,0 +1,3 @@
+# Frontend-specific ignore rules are consolidated in the repo-root .gitignore
+# (node_modules/, web/node_modules/, web/dist/, web/.vite/, web/coverage/, ...).
+# This file is intentionally empty to avoid two sources of truth.

@@ -1,0 +1,119 @@
+# generated: 2026-04-18
+# last_updated: 2026-04-18
+# project: LatestNews
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: !DOCS/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-04-18
+last_updated: 2026-04-18  # story 1.2 → review
+project: LatestNews
+project_key: NOKEY
+tracking_system: file-system
+story_location: !DOCS/implementation-artifacts
+
+development_status:
+  # Epic 1: Foundation & Design System
+  epic-1: in-progress
+  1-1-bootstrap-the-monorepo-scaffold: review
+  1-2-implement-design-tokens: review
+  1-3-implement-typography-system: backlog
+  1-4-install-and-tokenize-shadcn-ui-foundation-components: backlog
+  1-5-implement-appshell-with-routing-theme-toggle-and-keyboard-overlay: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: Frictionless Capture
+  epic-2: backlog
+  2-1-dashboard-capture-input-and-drag-drop-zone: backlog
+  2-2-backend-ingest-endpoint-with-atomic-stub-write: backlog
+  2-3-global-cmd-v-paste-handler-with-focus-discrimination: backlog
+  2-4-inline-5-state-ingest-visualization-on-itemcard: backlog
+  2-5-error-state-retry-action-and-soft-toast-system: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: AI Content Processing Pipeline
+  epic-3: backlog
+  3-1-llm-provider-protocol-and-claude-adapter: backlog
+  3-2-openai-adapter: backlog
+  3-3-ai-processing-pipeline-tldr-related-shelf: backlog
+  3-4-user-override-ui-for-ai-generated-fields: backlog
+  3-5-settings-ui-for-llm-provider-switching: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Rediscovery Search
+  epic-4: backlog
+  4-1-qmd-adapter-with-in-process-integration: backlog
+  4-2-search-endpoint-with-hybrid-ranking-and-shelf-filter: backlog
+  4-3-cmd-k-command-palette-with-preview-pane: backlog
+  4-4-thumbs-up-thumbs-down-feedback-with-rerank-boost: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Chat with Your Wiki
+  epic-5: backlog
+  5-1-sse-event-bus-with-typed-envelope: backlog
+  5-2-chat-orchestrator-and-streaming-endpoint: backlog
+  5-3-dashboard-chat-panel-with-citation-chips: backlog
+  5-4-slash-command-prompt-template-picker: backlog
+  5-5-sensitivity-middleware-and-optional-mcp-surface: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Explore & Obsidian Compatibility
+  epic-6: backlog
+  6-1-explore-page-with-force-directed-graph: backlog
+  6-2-minigraph-ambient-strip-on-dashboard: backlog
+  6-3-obsidian-vault-compatibility-verified: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: Shelves, Sensitivity & Multi-User
+  epic-7: backlog
+  7-1-shelf-model-with-item-move-and-delete: backlog
+  7-2-sensitivity-badge-picker-and-single-implementation-middleware: backlog
+  7-3-shared-shelf-paths-and-filesystem-watcher: backlog
+  7-4-conflict-detection-and-resolution-ui: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8: Settings & Plugin Extensibility
+  epic-8: backlog
+  8-1-plugin-loader-with-asyncio-isolation: backlog
+  8-2-plugin-contract-tests: backlog
+  8-3-built-in-ingest-plugins: backlog
+  8-4-settings-route-with-all-sections: backlog
+  8-5-agents-md-operative-and-self-indexing-docs: backlog
+  epic-8-retrospective: optional
+
+  # Epic 9: Onboarding, Polish & Release
+  epic-9: backlog
+  9-1-pre-seed-pipeline-and-firstlaunchhero: backlog
+  9-2-empty-states-loading-skeletons-and-notification-polish: backlog
+  9-3-accessibility-audit-and-enforcement: backlog
+  9-4-visual-polish-pass-and-external-reviewer-release-gate: backlog
+  epic-9-retrospective: optional

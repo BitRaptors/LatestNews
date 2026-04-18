@@ -1,4 +1,6 @@
 /// <reference types="vitest/config" />
+// ^ augments Vite's UserConfig with the `test:` block so Vitest options
+//   (environment / globals / setupFiles / include) typecheck under strict TS.
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'

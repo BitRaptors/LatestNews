@@ -86,6 +86,11 @@
   --shadow-elevated: 0 4px 12px -2px rgba(15, 20, 25, 0.08), 0 2px 6px -2px rgba(15, 20, 25, 0.04);
   --shadow-overlay:
     0 24px 48px -12px rgba(15, 20, 25, 0.14), 0 8px 24px -8px rgba(15, 20, 25, 0.08);
+  /* TODO(post-1.5): switch the bloom triplets below to
+     `rgb(from var(--color-accent-glow) r g b / α)` once we've confirmed the
+     full toolchain (Tailwind v4 + Vite + any post-processors) pass the
+     relative-color-syntax through unchanged. Until then, the rgbas are
+     pre-decomposed from `#0DFFAE`; edit both sides if the glow colour moves. */
   --shadow-glow-accent:
     0 0 0 1px var(--color-accent-glow), 0 0 12px 0 rgba(13, 255, 174, 0.55),
     0 0 32px 0 rgba(13, 255, 174, 0.25);
@@ -137,6 +142,9 @@
   --shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.5), 0 1px 3px 0 rgba(0, 0, 0, 0.4);
   --shadow-elevated: 0 4px 12px -2px rgba(0, 0, 0, 0.6), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
   --shadow-overlay: 0 24px 48px -12px rgba(0, 0, 0, 0.7), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+  /* TODO(post-1.5): see matching comment in the light block — pre-decomposed
+     from `#14FFB4`; switch to `rgb(from var(--color-accent-glow) r g b / α)`
+     when toolchain pass-through is confirmed. */
   --shadow-glow-accent:
     0 0 0 1px var(--color-accent-glow), 0 0 16px 0 rgba(20, 255, 180, 0.65),
     0 0 40px 0 rgba(20, 255, 180, 0.35);

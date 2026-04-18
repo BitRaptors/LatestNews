@@ -102,7 +102,7 @@ so that every subsequent feature has a working foundation to build upon.
     - [x] `test`: runs `npm ci`, `npm ci --prefix web`, `uv sync --frozen`, `npm run test`
   - [x] Ubuntu latest runner, Node 22, Python 3.12
   - [x] GitHub Actions cache for npm (via `actions/setup-node`) and uv (via `astral-sh/setup-uv` with `enable-cache`)
-  - [ ] Commit the workflow; first CI run should succeed *(pending push — verified locally; CI status reported below)*
+  - [x] Commit the workflow; first CI run succeeded (run id `24597315111` on `dev`, all three jobs green; cache-save warnings are benign parallel-job races)
 
 - [x] **Task 9: Verify end-to-end scaffold behaviour** (AC: #1, #4, #5, #8)
   - [x] Fresh-install equivalent verified: `npm install` (root + web), `uv sync`, `npm run dev` all succeed on the freshly-authored scaffold
@@ -114,12 +114,12 @@ so that every subsequent feature has a working foundation to build upon.
   - [x] `npm run typecheck` → green (tsc + mypy)
   - [x] `npm run test` → green (1 pytest test + web no-op)
 
-- [ ] **Task 10: Commit and push the scaffold** (AC: all)
-  - [ ] `git add -A` (respecting `.gitignore`)
-  - [ ] Conventional Commits message: `feat(foundation): bootstrap monorepo scaffold (Story 1.1)`
-  - [ ] Commit body references Story 1.1 and lists key files added
-  - [ ] Push to `origin/dev` (new integration branch; `main` remains untouched pending PR/merge)
-  - [ ] Verify GitHub Actions CI run is green on the pushed commit
+- [x] **Task 10: Commit and push the scaffold** (AC: all)
+  - [x] `git add -A` (respecting `.gitignore`)
+  - [x] Conventional Commits message: `feat(foundation): bootstrap monorepo scaffold (Story 1.1)` — commit `2973024`
+  - [x] Commit body references Story 1.1 and lists key files added
+  - [x] Push to `origin/dev` (new integration branch; `main` remains untouched pending PR/merge)
+  - [x] Verify GitHub Actions CI run is green on the pushed commit — run `24597315111` green (lint 20s, typecheck 24s, test 23s)
 
 ## Dev Notes
 
@@ -419,3 +419,4 @@ claude-opus-4-7 (1M context) via Claude Code (BMad `bmad-dev-story` workflow).
 |------------|-----------------------------------------------------------------------------------------------------------|
 | 2026-04-18 | Status → `in-progress`. Branch `dev` created from `main`.                                                 |
 | 2026-04-18 | Tasks 1–9 implemented; `/api/health` test green via RED → GREEN → REFACTOR. Status → `review` on commit. |
+| 2026-04-18 | Task 10: commit `2973024` pushed to `origin/dev`; GitHub Actions run `24597315111` green on all 3 jobs.      |

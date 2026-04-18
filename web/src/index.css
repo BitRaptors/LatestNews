@@ -84,6 +84,59 @@
   --shadow-overlay: var(--shadow-overlay);
   --shadow-glow-accent: var(--shadow-glow-accent);
   --shadow-glow-accent-subtle: var(--shadow-glow-accent-subtle);
+
+  /* Typography — map to Tailwind's expected names so utilities like
+     `font-sans`, `text-body`, `text-display-1` compile correctly. Paired
+     `--text-<role>--line-height` / `--text-<role>--letter-spacing` apply
+     with the font-size utility — no separate `leading-*` / `tracking-*`
+     class required. Font-weight Tailwind defaults (font-normal / -medium
+     / -semibold / -bold) already match our 400/500/600/700 values; no
+     remap needed. */
+
+  --font-sans: var(--font-family-sans);
+  --font-mono: var(--font-family-mono);
+
+  --text-display-1: var(--font-size-display-1);
+  --text-display-1--line-height: var(--line-height-display-1);
+  --text-display-1--letter-spacing: var(--letter-spacing-display-1);
+
+  --text-display-2: var(--font-size-display-2);
+  --text-display-2--line-height: var(--line-height-display-2);
+  --text-display-2--letter-spacing: var(--letter-spacing-display-2);
+
+  --text-heading-1: var(--font-size-heading-1);
+  --text-heading-1--line-height: var(--line-height-heading-1);
+  --text-heading-1--letter-spacing: var(--letter-spacing-heading-1);
+
+  --text-heading-2: var(--font-size-heading-2);
+  --text-heading-2--line-height: var(--line-height-heading-2);
+  --text-heading-2--letter-spacing: var(--letter-spacing-heading-2);
+
+  --text-heading-3: var(--font-size-heading-3);
+  --text-heading-3--line-height: var(--line-height-heading-3);
+
+  --text-body-lg: var(--font-size-body-lg);
+  --text-body-lg--line-height: var(--line-height-body-lg);
+
+  --text-body: var(--font-size-body);
+  --text-body--line-height: var(--line-height-body);
+
+  --text-body-sm: var(--font-size-body-sm);
+  --text-body-sm--line-height: var(--line-height-body-sm);
+
+  --text-label: var(--font-size-label);
+  --text-label--line-height: var(--line-height-label);
+  --text-label--letter-spacing: var(--letter-spacing-label);
+
+  --text-caption: var(--font-size-caption);
+  --text-caption--line-height: var(--line-height-caption);
+  --text-caption--letter-spacing: var(--letter-spacing-caption);
+
+  --text-mono: var(--font-size-mono);
+  --text-mono--line-height: var(--line-height-mono);
+
+  --text-mono-sm: var(--font-size-mono-sm);
+  --text-mono-sm--line-height: var(--line-height-mono-sm);
 }
 
 /* Base element styles driven by tokens. Proves the token system applies.
@@ -101,6 +154,7 @@ body {
   min-height: 100vh;
   color: inherit;
   background: inherit;
+  font-family: var(--font-family-sans);
   /* Smooth the visual flip on subsequent theme changes (Story 1.5+). The
      initial apply happens before paint so there's no flicker on boot.
      `--duration-base` is populated by Story 1.4; until then the fallback

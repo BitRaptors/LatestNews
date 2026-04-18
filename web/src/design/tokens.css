@@ -38,6 +38,82 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-full: 9999px;
+
+  /* ---------- Typography (NFR-V1, NFR-A2) ------------------------------- */
+
+  /* Family stacks — fallbacks protect against FOIT if @fontsource load fails.
+     Single quotes inside CSS values avoid escape-pair fighting with formatters. */
+  --font-family-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Weights — coincide with Tailwind defaults (normal/medium/semibold/bold). */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Type scale — 12 roles × 3 props each. Pixel sizes (not rem) per UX spec;
+     letter-spacing in em so it scales with size (Figma %-notation → em). */
+
+  /* display-1 — first-launch hero title */
+  --font-size-display-1: 48px;
+  --line-height-display-1: 56px;
+  --letter-spacing-display-1: -0.015em;
+
+  /* display-2 — route hero headers */
+  --font-size-display-2: 36px;
+  --line-height-display-2: 44px;
+  --letter-spacing-display-2: -0.01em;
+
+  /* heading-1 — section titles, item detail title */
+  --font-size-heading-1: 24px;
+  --line-height-heading-1: 32px;
+  --letter-spacing-heading-1: -0.005em;
+
+  /* heading-2 — sub-section headers */
+  --font-size-heading-2: 20px;
+  --line-height-heading-2: 28px;
+  --letter-spacing-heading-2: -0.005em;
+
+  /* heading-3 — card titles, palette headers */
+  --font-size-heading-3: 17px;
+  --line-height-heading-3: 24px;
+  --letter-spacing-heading-3: 0;
+
+  /* body-lg — reader-facing body (markdown, item detail) */
+  --font-size-body-lg: 17px;
+  --line-height-body-lg: 26px;
+  --letter-spacing-body-lg: 0;
+
+  /* body — default UI body, TL;DR */
+  --font-size-body: 15px;
+  --line-height-body: 22px;
+  --letter-spacing-body: 0;
+
+  /* body-sm — secondary metadata, timestamps */
+  --font-size-body-sm: 13px;
+  --line-height-body-sm: 18px;
+  --letter-spacing-body-sm: 0;
+
+  /* label — form labels, chips, UI emphasis */
+  --font-size-label: 13px;
+  --line-height-label: 18px;
+  --letter-spacing-label: 0.01em;
+
+  /* caption — shortcut hints, micro-metadata */
+  --font-size-caption: 12px;
+  --line-height-caption: 16px;
+  --letter-spacing-caption: 0.02em;
+
+  /* mono — source URLs, inline code */
+  --font-size-mono: 13px;
+  --line-height-mono: 20px;
+  --letter-spacing-mono: 0;
+
+  /* mono-sm — pipeline state labels, small mono */
+  --font-size-mono-sm: 11px;
+  --line-height-mono-sm: 16px;
+  --letter-spacing-mono-sm: 0;
 }
 
 /* ====================================================================== */

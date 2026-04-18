@@ -20,6 +20,8 @@ def _configure_cors(app: FastAPI) -> None:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(DEV_ORIGINS),
+        # No session cookies or bearer tokens yet → credentials disabled.
+        # Flip to True (and narrow origins) when auth lands.
         allow_credentials=False,
         allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
         allow_headers=["Content-Type", "Accept"],

@@ -1,6 +1,6 @@
 # Story 1.3: Implement typography system (Inter + JetBrains Mono with full type scale)
 
-Status: review
+Status: done
 
 ## Story
 

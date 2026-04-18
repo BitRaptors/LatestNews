@@ -1,6 +1,6 @@
 # Story 1.2: Implement design tokens (colours, spacing, radius, shadow)
 
-Status: review
+Status: done
 
 ## Story
 

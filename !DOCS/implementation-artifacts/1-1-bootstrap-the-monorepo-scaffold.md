@@ -1,6 +1,6 @@
 # Story 1.1: Bootstrap the monorepo scaffold
 
-Status: review
+Status: done
 
 ## Story
 

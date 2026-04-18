@@ -98,6 +98,30 @@ const GRADIENT_TOKENS = [
   '--gradient-citation-highlight',
 ] as const
 
+const TYPOGRAPHY_FAMILY_TOKENS = ['--font-family-sans', '--font-family-mono'] as const
+
+const TYPOGRAPHY_WEIGHT_TOKENS = [
+  '--font-weight-regular',
+  '--font-weight-medium',
+  '--font-weight-semibold',
+  '--font-weight-bold',
+] as const
+
+const TYPOGRAPHY_SCALE_ROLES = [
+  'display-1',
+  'display-2',
+  'heading-1',
+  'heading-2',
+  'heading-3',
+  'body-lg',
+  'body',
+  'body-sm',
+  'label',
+  'caption',
+  'mono',
+  'mono-sm',
+] as const
+
 function extractBlock(css: string, selector: string): string {
   // Match selector followed by optional whitespace then `{` so that bare
   // selector mentions inside comments don't get picked up.
@@ -158,5 +182,34 @@ describe('tokens.css — theme-invariant scales', () => {
 describe('tokens.css — spacing counts are exact', () => {
   test('fifteen spacing tokens (4px base, 0 through 24 with sub-integer slots)', () => {
     expect(SPACING_TOKENS).toHaveLength(15)
+  })
+})
+
+describe('tokens.css — typography tokens', () => {
+  test.each(TYPOGRAPHY_FAMILY_TOKENS)('family token %s is declared', (token) => {
+    expect(tokensCss).toContain(token)
+  })
+
+  test.each(TYPOGRAPHY_WEIGHT_TOKENS)('weight token %s is declared', (token) => {
+    expect(tokensCss).toContain(token)
+  })
+
+  test.each(
+    TYPOGRAPHY_SCALE_ROLES,
+  )('role %s has font-size, line-height, and letter-spacing tokens', (role) => {
+    expect(tokensCss).toContain(`--font-size-${role}`)
+    expect(tokensCss).toContain(`--line-height-${role}`)
+    expect(tokensCss).toContain(`--letter-spacing-${role}`)
+  })
+
+  test('Inter is the declared sans family with a fallback chain', () => {
+    // Accept either quote style — Biome's CSS formatter normalises to double.
+    // Asserting the fallback chain too so a future refactor can't accidentally
+    // drop FOIT protection.
+    expect(tokensCss).toMatch(/--font-family-sans:\s*['"]Inter['"],\s*ui-sans-serif/)
+  })
+
+  test('JetBrains Mono is the declared mono family with a fallback chain', () => {
+    expect(tokensCss).toMatch(/--font-family-mono:\s*['"]JetBrains Mono['"],\s*ui-monospace/)
   })
 })

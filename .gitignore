@@ -1,0 +1,62 @@
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Editor / IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# BMad / AI-tool local installs (not project output)
+_bmad/
+.claude/
+.agents/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Frontend — Node
+node_modules/
+web/node_modules/
+web/dist/
+web/.vite/
+web/coverage/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Backend — Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.venv/
+venv/
+.python-version
+
+# uv
+.uv/
+
+# LatestNews runtime artefacts (gitignored; populated at runtime)
+!DOCS/logs/
+!DOCS/plugin-errors/
+!DOCS/archive/
+
+# User data (any configured data-root under repo — defensive)
+.latestnews/
+
+# Temp & staging
+*.tmp
+*.bak
+.staged/

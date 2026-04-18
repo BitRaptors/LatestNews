@@ -1,0 +1,58 @@
+[project]
+name = "latestnews"
+version = "0.1.0"
+description = "Local-first personal knowledge web app — rediscovery-first search, AI chat, Obsidian-compatible."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Csaba Toth" }]
+
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "watchdog",
+  "pydantic-settings",
+  "structlog",
+  "keyring",
+]
+
+[dependency-groups]
+dev = [
+  "pytest",
+  "pytest-asyncio",
+  "ruff",
+  "mypy",
+  "hypothesis",
+  "httpx",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/latestnews"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "SIM"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+explicit_package_bases = true
+mypy_path = "src"
+packages = ["latestnews"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]

@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (Biome + Ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            web/package-lock.json
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - name: Install root deps
+        run: npm ci
+      - name: Install web deps
+        run: npm ci --prefix web
+      - name: Install Python deps
+        run: uv sync --frozen
+      - name: Biome + Ruff
+        run: npm run lint
+
+  typecheck:
+    name: Typecheck (tsc + mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            web/package-lock.json
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - name: Install root deps
+        run: npm ci
+      - name: Install web deps
+        run: npm ci --prefix web
+      - name: Install Python deps
+        run: uv sync --frozen
+      - name: tsc + mypy
+        run: npm run typecheck
+
+  test:
+    name: Test (Vitest + pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            web/package-lock.json
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - name: Install root deps
+        run: npm ci
+      - name: Install web deps
+        run: npm ci --prefix web
+      - name: Install Python deps
+        run: uv sync --frozen
+      - name: Web + backend tests
+        run: npm run test

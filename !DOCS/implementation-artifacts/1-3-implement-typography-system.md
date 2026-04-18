@@ -29,7 +29,7 @@ so that every subsequent component renders tokenized typography with no external
 
 8. **App.tsx demonstrates typography.** `web/src/App.tsx` applies `className="text-heading-1 font-semibold"` (or equivalently `text-display-2`) to the `<h1>`. The browser shows the heading in the correct size, line-height, weight, and Inter family. This is the visible proof the typography system is wired.
 
-9. **Token contract tests extended.** `web/src/design/__tests__/tokens.test.ts` gains a `TYPOGRAPHY_TOKENS` parameterised test that asserts presence of every font-family / font-weight / font-size / line-height / letter-spacing token. Total: 2 family + 4 weight + (12 × 3) scale = **42 new token assertions**; existing colour / spacing / radius / shadow tests remain unchanged.
+9. **Token contract tests extended.** `web/src/design/__tests__/tokens.test.ts` gains parameterised `TYPOGRAPHY_*` tests asserting presence of every font-family / font-weight / font-size / line-height / letter-spacing token in `tokens.css`. Vitest counts `test.each` cases as individual tests, so the expected delta is **~19 new Vitest cases** (2 family + 4 weight + 12 roles × 1 parameterised case each checks all 3 paired props internally + 2 family-identity regexes). Existing colour / spacing / radius / shadow tests remain unchanged.
 
 10. **No FOIT on reload.** With `@fontsource`'s default `font-display: swap`, system fonts render first and Inter swaps in when ready. Verify in the browser: open devtools' Rendering → Font display swaps, reload, confirm the heading is visible throughout (no invisible-text flash). This is a manual check; no automated test required.
 

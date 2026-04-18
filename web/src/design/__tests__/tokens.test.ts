@@ -202,12 +202,14 @@ describe('tokens.css — typography tokens', () => {
     expect(tokensCss).toContain(`--letter-spacing-${role}`)
   })
 
-  test('Inter is the declared sans family', () => {
+  test('Inter is the declared sans family with a fallback chain', () => {
     // Accept either quote style — Biome's CSS formatter normalises to double.
-    expect(tokensCss).toMatch(/--font-family-sans:\s*['"]Inter['"]/)
+    // Asserting the fallback chain too so a future refactor can't accidentally
+    // drop FOIT protection.
+    expect(tokensCss).toMatch(/--font-family-sans:\s*['"]Inter['"],\s*ui-sans-serif/)
   })
 
-  test('JetBrains Mono is the declared mono family', () => {
-    expect(tokensCss).toMatch(/--font-family-mono:\s*['"]JetBrains Mono['"]/)
+  test('JetBrains Mono is the declared mono family with a fallback chain', () => {
+    expect(tokensCss).toMatch(/--font-family-mono:\s*['"]JetBrains Mono['"],\s*ui-monospace/)
   })
 })

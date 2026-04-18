@@ -93,3 +93,46 @@ See the architecture document's **Implementation Patterns & Consistency
 Rules** section for naming conventions (Python `snake_case`, TS `camelCase`,
 snake_case on the wire) and anti-patterns (no `console.log`, no `print()`,
 no unannotated `any`).
+
+## Branch strategy
+
+- `main` — production. Only integrates via `dev → main` merge once a story
+  (or batch of stories) has passed code review.
+- `dev` — integration branch for every story. Implementation commits land
+  here first. CI (`.github/workflows/ci.yml`) runs on push and PR to both
+  `main` and `dev`.
+- Never push directly to `main` outside a merge from `dev`.
+
+## Per-story workflow (default sequence)
+
+Every story follows the same four-phase loop. An agent executing story
+work should default to running these in order without asking, unless the
+user specifies otherwise.
+
+1. **Create** — `bmad-create-story` generates a `ready-for-dev` story file
+   in `!DOCS/implementation-artifacts/<epic>-<story>-<slug>.md` and updates
+   `sprint-status.yaml` (story → `ready-for-dev`).
+2. **Implement** — `bmad-dev-story` executes tasks on `dev` with
+   RED→GREEN→REFACTOR for behaviour tests, commits with a Conventional
+   Commits message (`feat(<scope>): ... (Story X.Y)`), pushes to
+   `origin/dev`, and verifies GitHub Actions CI is green on the resulting
+   commit. Story status → `review`.
+3. **Review** — `superpowers:requesting-code-review` dispatches the
+   `superpowers:code-reviewer` subagent against the commit range. Apply
+   Critical and Important findings as a follow-up `fix(<scope>): apply
+   Story X.Y code-review findings` commit. Re-verify CI.
+4. **Integrate** — once review is clean and CI green, open a PR
+   `dev → main` via `gh pr create` (or fast-forward merge if the branch is
+   ahead by pure additive commits). After merge, pull `main`, rebase `dev`
+   on `main`, and proceed to Story X.(Y+1).
+
+Operational defaults:
+
+- Never merge to `main` without passing review.
+- Never skip `requesting-code-review` — even scaffolding stories have
+  surfaced real AC violations (see Story 1.1 C1 finding on `.python-version`).
+- For hotfixes too small to warrant a story, commit to `dev` first with a
+  `fix(...)` message and let it catch a ride with the next story's PR.
+- Prefer one PR per story (or per Epic when stories are tight); avoid
+  long-running feature branches — `dev` is the integration surface, not a
+  parking lot.

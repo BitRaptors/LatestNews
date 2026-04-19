@@ -1,6 +1,6 @@
 # Story 2.3: Global Cmd-V paste handler with focus discrimination
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -41,31 +41,31 @@ so that capture is always one keystroke away, no matter where my focus happens t
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Author `useGlobalPasteHandler`** (AC: #1, #2, #3, #4, #5, #6)
-  - [ ] Create `web/src/app/useGlobalPasteHandler.ts`
-  - [ ] `useEffect` binds a `paste` handler to `document` and cleans up on unmount
-  - [ ] Inside the handler: `if (isEditableTarget(event.target)) return` — native paste wins
-  - [ ] `event.preventDefault()` on the global path
-  - [ ] Read `event.clipboardData?.getData('text/plain') ?? ''`; `trim()`; bail on empty
-  - [ ] Call `await postCaptureUrl(text)`; on success → `toast.success('Captured', { duration: 2000 })`; on error → `console.warn` behind `biome-ignore`
-  - [ ] No extra state; the hook returns nothing (`void`)
+- [x] **Task 1: Author `useGlobalPasteHandler`** (AC: #1, #2, #3, #4, #5, #6)
+  - [x] Create `web/src/app/useGlobalPasteHandler.ts`
+  - [x] `useEffect` binds a `paste` handler to `document` and cleans up on unmount
+  - [x] Inside the handler: `if (isEditableTarget(event.target)) return` — native paste wins
+  - [x] `event.preventDefault()` on the global path
+  - [x] Read `event.clipboardData?.getData('text/plain') ?? ''`; `trim()`; bail on empty
+  - [x] Call `await postCaptureUrl(text)`; on success → `toast.success('Captured', { duration: 2000 })`; on error → `console.warn` behind `biome-ignore`
+  - [x] No extra state; the hook returns nothing (`void`)
 
-- [ ] **Task 2: Wire into AppShell** (AC: #8)
-  - [ ] `web/src/app/AppShell.tsx` — add `useGlobalPasteHandler()` call immediately after `useGlobalShortcuts({...})`
-  - [ ] No prop plumbing; the hook binds globally and uses the existing `postCaptureUrl` + `sonner` imports
+- [x] **Task 2: Wire into AppShell** (AC: #8)
+  - [x] `web/src/app/AppShell.tsx` — add `useGlobalPasteHandler()` call immediately after `useGlobalShortcuts({...})`
+  - [x] No prop plumbing; the hook binds globally and uses the existing `postCaptureUrl` + `sonner` imports
 
-- [ ] **Task 3: Author unit tests** (AC: #9)
-  - [ ] `web/src/app/__tests__/useGlobalPasteHandler.test.tsx` — wrap the hook in a small `<TestHost />` component that calls it, render with `@testing-library/react`
-  - [ ] Stub `global.fetch` (same pattern as `CaptureInput.test.tsx` / `DropZone.test.tsx`)
-  - [ ] Mock `sonner` with `vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() }, Toaster: () => null }))`
-  - [ ] Synthesize paste events via `new Event('paste', { bubbles: true, cancelable: true })` + `Object.defineProperty(event, 'clipboardData', ...)` — mirror the drag-event helper from DropZone tests
-  - [ ] 7 cases per AC #9
+- [x] **Task 3: Author unit tests** (AC: #9)
+  - [x] `web/src/app/__tests__/useGlobalPasteHandler.test.tsx` — wrap the hook in a small `<TestHost />` component that calls it, render with `@testing-library/react`
+  - [x] Stub `global.fetch` (same pattern as `CaptureInput.test.tsx` / `DropZone.test.tsx`)
+  - [x] Mock `sonner` with `vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() }, Toaster: () => null }))`
+  - [x] Synthesize paste events via `new Event('paste', { bubbles: true, cancelable: true })` + `Object.defineProperty(event, 'clipboardData', ...)` — mirror the drag-event helper from DropZone tests
+  - [x] 7 cases per AC #9
 
-- [ ] **Task 4: Gate + commit + CI** (AC: #11)
-  - [ ] `npm run lint`, `npm run typecheck`, `npm run test` — all green. Expected test count: 162 (2.2) + 7 = ~169.
-  - [ ] Conventional Commits: `feat(capture): global ⌘V paste handler with focus discrimination (Story 2.3)`
-  - [ ] Push `origin/dev`; verify CI green
-  - [ ] Per `AGENTS.md` workflow: review → apply fixes → PR/merge follow automatically
+- [x] **Task 4: Gate + commit + CI** (AC: #11)
+  - [x] `npm run lint`, `npm run typecheck`, `npm run test` — all green. Expected test count: 162 (2.2) + 7 = ~169.
+  - [x] Conventional Commits: `feat(capture): global ⌘V paste handler with focus discrimination (Story 2.3)`
+  - [x] Push `origin/dev`; verify CI green
+  - [x] Per `AGENTS.md` workflow: review → apply fixes → PR/merge follow automatically
 
 ## Dev Notes
 
@@ -182,12 +182,44 @@ No new dependencies. `sonner` is already installed (Story 1.4). `@testing-librar
 
 ### Agent Model Used
 
-(to be filled by dev-story run)
+claude-opus-4-7 (1M context) via Claude Code (BMad `bmad-dev-story` workflow).
 
 ### Debug Log References
 
+- **`vi.mock('sonner', ...)` must precede the `from 'sonner'` import** in the test file. Vitest hoists `vi.mock` calls to the top of the module, but the factory must still appear in source-order before the real import for the lint/format pass to keep its hands off it. Biome's `organizeImports` would have moved the real import above the mock; suppressed by keeping the mock at file-top as a source-order statement.
+- **Biome auto-reformatted the test file** (collapsed `stubFetchError` to a one-liner, trimmed the `makePasteEvent` signature). Applied via `biome check --write .`. No semantic change.
+- **`happy-dom` dispatches `paste` on `document`** correctly when tests use `document.dispatchEvent(new Event('paste', {...}))`. `event.target` is respected when set via `Object.defineProperty`.
+- **`event.defaultPrevented` assertion** is the cleanest proxy for "native paste proceeds" under happy-dom — no real clipboard insertion happens, but the absence of `preventDefault` is what matters contractually.
+
 ### Completion Notes List
+
+- **Scope held.** Single hook, single AppShell wire-up, 7 tests. No image-paste, no rich-text handling, no retry UI, no progress viz.
+- **Reuses `isEditableTarget`** from `web/src/lib/dom.ts` (Story 2.1) — the single source of truth for "don't hijack this element". No drift between `useGlobalShortcuts`, `DropZone`, and the new handler.
+- **`postCaptureUrl` reused** from `web/src/features/capture/postCapture.ts` (Story 2.1). No new fetch plumbing; same backend contract as Story 2.2 expects.
+- **Sonner `duration: 2000` override** wins over AppShell's default `toastOptions.duration = DURATION_BASE` (220 ms). Per-call override is the idiomatic Sonner pattern.
+- **Failure path is a `console.warn`** behind a `biome-ignore` comment naming Story 2.5 as the replacement site. Matches the same placeholder convention in `CaptureInput` and `DropZone`.
+- **Test count 133 → 140** (+7 paste-handler assertions). All backend tests unchanged (29).
+- **NFR coverage:** A1 (keyboard-first capture from anywhere), A4 (Sonner degrades via global reduced-motion reset from Story 1.5), R1 (failed POST leaves no client-side state — next ⌘V is the user's retry until Story 2.5), S1/S2 (only `/api/items`; no outbound), Q6 (commit references Story 2.3).
 
 ### File List
 
+**New — app layer**
+
+- `web/src/app/useGlobalPasteHandler.ts`
+- `web/src/app/__tests__/useGlobalPasteHandler.test.tsx`
+
+**Modified — app layer**
+
+- `web/src/app/AppShell.tsx` (one additional import + one `useGlobalPasteHandler()` call alongside `useGlobalShortcuts`)
+
+**Modified — planning artefacts**
+
+- `!DOCS/implementation-artifacts/2-3-global-cmd-v-paste-handler-with-focus-discrimination.md` (status + task checkboxes + Dev Agent Record)
+- `!DOCS/implementation-artifacts/sprint-status.yaml` (2-3 → in-progress → review)
+
 ### Change Log
+
+| Date       | Change                                                                                              |
+|------------|-----------------------------------------------------------------------------------------------------|
+| 2026-04-19 | Status → `in-progress`. Hook + AppShell wire + 7 RTL tests landed.                                  |
+| 2026-04-19 | 140 web + 29 backend = 169 total tests green. Status → `review` on commit.                          |

@@ -118,6 +118,19 @@
   --font-size-mono-sm: 11px;
   --line-height-mono-sm: 16px;
   --letter-spacing-mono-sm: 0;
+
+  /* ---------- Motion (NFR-V2, NFR-A4) ----------------------------------- */
+
+  /* Durations. JS/TS call sites pull matching constants from motion.ts so
+     the two sources stay synchronised (same numbers, different units). */
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --duration-soft: 360ms;
+
+  /* Easings. `--easing-spring` lives only in motion.ts (spring physics are
+     a Motion library construct, not a CSS value). */
+  --easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --easing-linear: linear;
 }
 
 /* ====================================================================== */

@@ -107,6 +107,14 @@ const TYPOGRAPHY_WEIGHT_TOKENS = [
   '--font-weight-bold',
 ] as const
 
+const MOTION_CSS_TOKENS = [
+  '--duration-fast',
+  '--duration-base',
+  '--duration-soft',
+  '--easing-standard',
+  '--easing-linear',
+] as const
+
 const TYPOGRAPHY_SCALE_ROLES = [
   'display-1',
   'display-2',
@@ -211,5 +219,15 @@ describe('tokens.css — typography tokens', () => {
 
   test('JetBrains Mono is the declared mono family with a fallback chain', () => {
     expect(tokensCss).toMatch(/--font-family-mono:\s*['"]JetBrains Mono['"],\s*ui-monospace/)
+  })
+})
+
+describe('tokens.css — motion tokens', () => {
+  test.each(MOTION_CSS_TOKENS)('motion token %s is declared', (token) => {
+    expect(tokensCss).toContain(token)
+  })
+
+  test('--easing-standard is a cubic-bezier', () => {
+    expect(tokensCss).toMatch(/--easing-standard:\s*cubic-bezier\(0\.2,\s*0,\s*0,\s*1\)/)
   })
 })

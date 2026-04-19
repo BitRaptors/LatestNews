@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-18
-last_updated: 2026-04-18  # story 1.3 → review
+last_updated: 2026-04-19  # story 1.4 → review
 project: LatestNews
 project_key: NOKEY
 tracking_system: file-system
@@ -46,8 +46,8 @@ development_status:
   epic-1: in-progress
   1-1-bootstrap-the-monorepo-scaffold: done
   1-2-implement-design-tokens: done
-  1-3-implement-typography-system: review
-  1-4-install-and-tokenize-shadcn-ui-foundation-components: backlog
+  1-3-implement-typography-system: done
+  1-4-install-and-tokenize-shadcn-ui-foundation-components: review
   1-5-implement-appshell-with-routing-theme-toggle-and-keyboard-overlay: backlog
   epic-1-retrospective: optional
 

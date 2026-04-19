@@ -4,15 +4,20 @@
  * Layer order matters:
  *   1. tokens.css declares CSS custom properties under [data-theme].
  *   2. Tailwind v4 is imported, producing the base layer + utility engine.
- *   3. @theme inline { ... } maps our tokens onto Tailwind's theme slots,
- *      so utility classes like bg-surface-primary / text-accent-glow /
- *      shadow-elevated / rounded-md resolve to our values. `inline` is
- *      required — it makes Tailwind substitute var(...) at use-site so the
- *      utilities flip correctly when [data-theme] changes on <html>.
+ *   3. tw-animate-css adds `animate-in` / `animate-out` utilities that
+ *      shadcn's Dialog / Sheet / Dropdown / etc. rely on.
+ *   4. @theme inline { ... } maps our tokens onto Tailwind's theme slots
+ *      AND onto shadcn's conventional slot names (--color-background,
+ *      --color-primary, etc.) so shadcn components render in our palette
+ *      without per-file rewriting.
+ *
+ * Do not @import '@fontsource-variable/geist' or any other font — typography
+ * is owned by web/src/design/typography.ts (NFR-S2, Story 1.3).
  */
 
 @import "./design/tokens.css";
 @import "tailwindcss";
+@import "tw-animate-css";
 
 /* Keep `dark:` variant working even though we drive theming via [data-theme]
    rather than a `dark` class. Enables e.g. `dark:shadow-glow-accent` when a
@@ -20,7 +25,10 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme inline {
-  /* Colours */
+  /* =========================================================================
+     1. Our semantic tokens (authoritative names)
+     ========================================================================= */
+
   --color-accent-deep: var(--color-accent-deep);
   --color-accent-mid: var(--color-accent-mid);
   --color-accent-glow: var(--color-accent-glow);
@@ -52,9 +60,8 @@
   --color-error-subtle-bg: var(--color-error-subtle-bg);
   --color-info: var(--color-info);
 
-  /* Spacing — Tailwind's utility engine reads --spacing-* for padding /
-     margin / gap, so alias our --space-* names onto that prefix while keeping
-     the source-of-truth names in tokens.css. */
+  /* Spacing — Tailwind uses --spacing-* for padding / margin / gap; alias
+     our source-of-truth --space-* names. */
   --spacing-0: var(--space-0);
   --spacing-0_5: var(--space-0_5);
   --spacing-1: var(--space-1);
@@ -85,14 +92,7 @@
   --shadow-glow-accent: var(--shadow-glow-accent);
   --shadow-glow-accent-subtle: var(--shadow-glow-accent-subtle);
 
-  /* Typography — map to Tailwind's expected names so utilities like
-     `font-sans`, `text-body`, `text-display-1` compile correctly. Paired
-     `--text-<role>--line-height` / `--text-<role>--letter-spacing` apply
-     with the font-size utility — no separate `leading-*` / `tracking-*`
-     class required. Font-weight Tailwind defaults (font-normal / -medium
-     / -semibold / -bold) already match our 400/500/600/700 values; no
-     remap needed. */
-
+  /* Typography */
   --font-sans: var(--font-family-sans);
   --font-mono: var(--font-family-mono);
 
@@ -137,13 +137,78 @@
 
   --text-mono-sm: var(--font-size-mono-sm);
   --text-mono-sm--line-height: var(--line-height-mono-sm);
+
+  /* Motion — Tailwind utilities: `duration-fast`, `ease-standard`, etc. */
+  --duration-fast: var(--duration-fast);
+  --duration-base: var(--duration-base);
+  --duration-soft: var(--duration-soft);
+  --ease-standard: var(--easing-standard);
+  --ease-linear: var(--easing-linear);
+
+  /* =========================================================================
+     2. shadcn slot aliases
+     shadcn-generated components use `bg-background`, `text-foreground`,
+     `bg-primary`, `border-border`, `ring-ring`, etc. Rather than rewrite
+     every generated file, we alias those slot names to our semantic tokens
+     so `npx shadcn@latest add …` output renders in our palette as-is.
+     ========================================================================= */
+
+  --color-background: var(--color-surface-primary);
+  --color-foreground: var(--color-text-primary);
+
+  --color-card: var(--color-surface-tertiary);
+  --color-card-foreground: var(--color-text-primary);
+
+  --color-popover: var(--color-surface-primary);
+  --color-popover-foreground: var(--color-text-primary);
+
+  --color-primary: var(--color-accent-deep);
+  --color-primary-foreground: var(--color-text-inverted);
+
+  --color-secondary: var(--color-surface-secondary);
+  --color-secondary-foreground: var(--color-text-primary);
+
+  --color-muted: var(--color-surface-tertiary);
+  --color-muted-foreground: var(--color-text-muted);
+
+  --color-accent: var(--color-accent-subtle-bg);
+  --color-accent-foreground: var(--color-accent-subtle-text);
+
+  --color-destructive: var(--color-error);
+
+  --color-border: var(--color-border-default);
+  --color-input: var(--color-border-default);
+  --color-ring: var(--color-accent-ring);
+
+  /* shadcn's `--radius` → our default medium radius. Tailwind already reads
+     our --radius-sm/md/lg/xl, so there's no utility impact. Used only where
+     shadcn writes raw `var(--radius)` (e.g. a component that hasn't been
+     swept yet). */
+  --radius: var(--radius-md);
+
+  /* Chart + sidebar slots: shadcn ships these by default. We don't use
+     them in MVP (no chart components yet); map to surface-tertiary and
+     text-primary so anything that references them doesn't blow up with an
+     undefined value. */
+  --color-chart-1: var(--color-accent-deep);
+  --color-chart-2: var(--color-accent-mid);
+  --color-chart-3: var(--color-accent-glow);
+  --color-chart-4: var(--color-text-muted);
+  --color-chart-5: var(--color-text-subtle);
+
+  --color-sidebar: var(--color-surface-secondary);
+  --color-sidebar-foreground: var(--color-text-primary);
+  --color-sidebar-primary: var(--color-accent-deep);
+  --color-sidebar-primary-foreground: var(--color-text-inverted);
+  --color-sidebar-accent: var(--color-accent-subtle-bg);
+  --color-sidebar-accent-foreground: var(--color-accent-subtle-text);
+  --color-sidebar-border: var(--color-border-default);
+  --color-sidebar-ring: var(--color-accent-ring);
 }
 
 /* Base element styles driven by tokens. Proves the token system applies.
-   Typography, layout utilities, and heading styles intentionally deferred:
-   - typography scale arrives in Story 1.3
-   - layout + heading styles come from Tailwind utilities applied at the
-     component level, starting with Story 1.5's AppShell. */
+   Typography, layout utilities, and heading styles come from Tailwind
+   utilities applied at the component level. */
 html {
   background: var(--color-surface-primary);
   color: var(--color-text-primary);
@@ -156,9 +221,7 @@ body {
   background: inherit;
   font-family: var(--font-family-sans);
   /* Smooth the visual flip on subsequent theme changes (Story 1.5+). The
-     initial apply happens before paint so there's no flicker on boot.
-     `--duration-base` is populated by Story 1.4; until then the fallback
-     220ms matches the UX spec. */
+     initial apply happens before paint so there's no flicker on boot. */
   transition:
     background-color var(--duration-base, 220ms) ease,
     color var(--duration-base, 220ms) ease;

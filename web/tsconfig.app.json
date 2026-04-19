@@ -22,7 +22,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Path aliases — shadcn's `@/` convention, mirrored in vite.config.ts.
+       `paths` without `baseUrl` works in TS 5+ (paths become project-root
+       relative). Avoids the TS 7 deprecation warning on `baseUrl`. */
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src"]
 }

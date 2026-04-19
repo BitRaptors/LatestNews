@@ -1,6 +1,6 @@
 # Story 1.5: Implement AppShell with routing, theme toggle, and keyboard overlay
 
-Status: review
+Status: done
 
 ## Story
 

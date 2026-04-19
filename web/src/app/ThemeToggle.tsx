@@ -1,5 +1,5 @@
 import { Monitor, Moon, Sun } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { getTheme, setTheme, type ThemeMode } from '@/design/theme'
 
@@ -10,11 +10,9 @@ const CYCLE: Record<ThemeMode, { next: ThemeMode; ariaLabel: string }> = {
 }
 
 export function ThemeToggle() {
+  // Vite SPA — no SSR. `getTheme()` is safe at initial render; no need for a
+  // post-mount `useEffect` sync.
   const [mode, setMode] = useState<ThemeMode>(() => getTheme())
-
-  useEffect(() => {
-    setMode(getTheme())
-  }, [])
 
   const handleClick = useCallback(() => {
     const next = CYCLE[mode].next

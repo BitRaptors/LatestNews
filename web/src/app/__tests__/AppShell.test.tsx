@@ -149,6 +149,18 @@ describe('AppShell — help overlay', () => {
     })
     expect(screen.queryByText('Keyboard shortcuts')).not.toBeInTheDocument()
   })
+
+  test('? pressed twice opens then closes the overlay', () => {
+    renderAt('/')
+    act(() => {
+      fireEvent.keyDown(document, { key: '?' })
+    })
+    expect(screen.getByText('Keyboard shortcuts')).toBeInTheDocument()
+    act(() => {
+      fireEvent.keyDown(document, { key: '?' })
+    })
+    expect(screen.queryByText('Keyboard shortcuts')).not.toBeInTheDocument()
+  })
 })
 
 describe('AppShell — theme toggle', () => {

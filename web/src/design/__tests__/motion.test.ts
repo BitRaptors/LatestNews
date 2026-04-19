@@ -49,8 +49,11 @@ describe('motion variants — shape', () => {
     expect(settle.transition.type).toBe('spring')
   })
 
-  test('pulse scales 1 → 1.03 → 1', () => {
+  test('pulse scales 1 → 1.03 → 1 with spring physics owning the timing', () => {
     expect(pulse.animate.scale).toEqual([1, 1.03, 1])
+    expect(pulse.transition.type).toBe('spring')
+    // Motion ignores `duration` when type === 'spring'; we deliberately omit it.
+    expect('duration' in pulse.transition).toBe(false)
   })
 
   test('press applies whileTap scale 0.96', () => {

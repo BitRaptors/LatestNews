@@ -64,13 +64,11 @@ export const settle = {
   transition: EASING_SPRING,
 } as const
 
-/** Attention-draw for hover states. */
+/** Attention-draw for hover states. Spring physics own the timing — Motion
+    ignores `duration` when `type === 'spring'`, so we don't set it. */
 export const pulse = {
   animate: { scale: [1, 1.03, 1] },
-  transition: {
-    duration: (DURATION_FAST * 2) / 1000,
-    ...EASING_SPRING,
-  },
+  transition: EASING_SPRING,
 } as const
 
 /** Tactile button feedback — tap / click. */

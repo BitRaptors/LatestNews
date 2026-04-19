@@ -34,11 +34,22 @@ function App() {
 
         <section className="space-y-3">
           <h2 className="text-heading-3 font-semibold">Buttons</h2>
-          <div className="flex flex-wrap gap-3">
-            <Button>Primary</Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button variant="primary">Primary</Button>
             <Button variant="secondary">Secondary</Button>
             <Button variant="ghost">Ghost</Button>
             <Button variant="destructive">Destructive</Button>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button variant="primary" size="sm">
+              sm
+            </Button>
+            <Button variant="primary" size="md">
+              md
+            </Button>
+            <Button variant="primary" size="lg">
+              lg
+            </Button>
           </div>
         </section>
 
@@ -113,7 +124,9 @@ function App() {
           </div>
         </section>
 
-        <Toaster richColors closeButton />
+        {/* Tokenized Sonner — closeButton stays; `richColors` removed because
+            it ships Sonner's own palette overriding our surface/text tokens. */}
+        <Toaster closeButton />
       </main>
     </TooltipProvider>
   )

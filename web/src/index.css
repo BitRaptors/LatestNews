@@ -4,12 +4,15 @@
  * Layer order matters:
  *   1. tokens.css declares CSS custom properties under [data-theme].
  *   2. Tailwind v4 is imported, producing the base layer + utility engine.
- *   3. tw-animate-css adds `animate-in` / `animate-out` utilities that
- *      shadcn's Dialog / Sheet / Dropdown / etc. rely on.
- *   4. @theme inline { ... } maps our tokens onto Tailwind's theme slots
+ *   3. @theme inline { ... } maps our tokens onto Tailwind's theme slots
  *      AND onto shadcn's conventional slot names (--color-background,
  *      --color-primary, etc.) so shadcn components render in our palette
  *      without per-file rewriting.
+ *
+ * Overlay transitions reference our `--duration-*` + `--easing-*` tokens
+ * via Tailwind's `duration-base` / `ease-standard` utilities at
+ * the component level (see components/ui/{dialog,popover,tooltip,sheet}).
+ * `tw-animate-css` was dropped at Story 1.5 — no longer needed.
  *
  * Do not @import '@fontsource-variable/geist' or any other font — typography
  * is owned by web/src/design/typography.ts (NFR-S2, Story 1.3).
@@ -17,7 +20,6 @@
 
 @import "./design/tokens.css";
 @import "tailwindcss";
-@import "tw-animate-css";
 
 /* Keep `dark:` variant working even though we drive theming via [data-theme]
    rather than a `dark` class. Enables e.g. `dark:shadow-glow-accent` when a
@@ -220,9 +222,32 @@ body {
   color: inherit;
   background: inherit;
   font-family: var(--font-family-sans);
-  /* Smooth the visual flip on subsequent theme changes (Story 1.5+). The
-     initial apply happens before paint so there's no flicker on boot. */
+  /* Smooth the visual flip on subsequent theme changes. The initial apply
+     happens before paint so there's no flicker on boot. */
   transition:
-    background-color var(--duration-base, 220ms) ease,
-    color var(--duration-base, 220ms) ease;
+    background-color var(--duration-base) ease,
+    color var(--duration-base) ease;
+}
+
+/* NFR-A4: honour prefers-reduced-motion globally. Components still transition
+   state, but the visible motion collapses to 1 ms — the value of animation
+   is as a semantic signal, not as decoration. `!important` is intentional
+   here: this rule MUST override any component-level `transition-duration`
+   regardless of specificity; that inversion is exactly what accessibility
+   reset snippets require. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: a11y reset must win */
+    animation-duration: 0.001ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: a11y reset must win */
+    animation-iteration-count: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: a11y reset must win */
+    transition-duration: 0.001ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: a11y reset must win */
+    transition-delay: 0ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: a11y reset must win */
+    scroll-behavior: auto !important;
+  }
 }

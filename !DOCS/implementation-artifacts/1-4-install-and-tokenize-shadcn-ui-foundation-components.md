@@ -1,6 +1,6 @@
 # Story 1.4: Install and tokenize shadcn/ui foundation components
 
-Status: review
+Status: done
 
 ## Story
 

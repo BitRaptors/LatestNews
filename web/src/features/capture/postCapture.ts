@@ -19,6 +19,12 @@ export type CaptureResponse = {
   status: 'queued'
 }
 
+/**
+ * Thrown on non-2xx responses from `/api/items`. Carries the HTTP status so
+ * future callers can discriminate transient (5xx) vs permanent (4xx).
+ *
+ * @see Story 2.5 — consumed by the retry-toast error surface.
+ */
 class CaptureError extends Error {
   readonly status: number
   constructor(message: string, status: number) {
@@ -38,7 +44,10 @@ async function parseOrThrow(response: Response): Promise<CaptureResponse> {
 /**
  * POST a URL or free-text string as JSON.
  *
- * Backend body: `{ url: string }` per architecture § API → Capture.
+ * Backend body: `{ url: string }` per architecture § API → Capture. The
+ * `url` field name is a misnomer: the backend accepts any non-empty string
+ * (URL, file path, free text) and disambiguates at parse time. We keep the
+ * wire-level name for architecture-doc consistency.
  */
 export async function postCaptureUrl(url: string): Promise<CaptureResponse> {
   const response = await fetch(ENDPOINT, {

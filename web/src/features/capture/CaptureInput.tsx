@@ -54,6 +54,8 @@ export function CaptureInput() {
       inputRef.current?.blur()
       return
     }
+    // Enter / Cmd+Enter / Ctrl+Enter all submit (AC #3). Shift+Enter and
+    // Alt+Enter are reserved for future newline / accessory commands.
     if (event.key === 'Enter' && !event.shiftKey && !event.altKey) {
       event.preventDefault()
       void submit()

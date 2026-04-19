@@ -111,6 +111,25 @@ describe('DropZone', () => {
     expect(init.body).toBe(JSON.stringify({ url: 'https://example.com/foo' }))
   })
 
+  test('dragenter → drop closes the overlay again', async () => {
+    stubFetchOk()
+    const { container } = render(<DropZone />)
+    const overlay = container.querySelector('[data-state]') as HTMLElement
+
+    await act(async () => {
+      document.body.dispatchEvent(makeDragEvent('dragenter', document.body, { types: ['Files'] }))
+      document.body.dispatchEvent(
+        makeDragEvent('drop', document.body, {
+          files: [new File([''], 'x.txt', { type: 'text/plain' })],
+          types: ['Files'],
+        }),
+      )
+      await new Promise((r) => setTimeout(r, 0))
+    })
+
+    expect(overlay.dataset.state).toBe('closed')
+  })
+
   test('drag originating inside an <input> does not activate the overlay', () => {
     const input = document.createElement('input')
     document.body.appendChild(input)

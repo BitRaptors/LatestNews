@@ -74,9 +74,13 @@ CI (`.github/workflows/ci.yml`) runs all three on push and pull_request to
 
 ## How to add an ingest plugin
 
-**Stub — to be authored in Story 8.1.** The plugin interface, loader
-(asyncio-isolated), contract tests, and the walkthrough example all land
-together when Epic 8 begins. Until then, built-in ingest lives inside
+The ingest coordinator lives at `src/latestnews/ingest/coordinator.py` —
+it's the entry point called by `POST /api/items`. Story 2.2 ships the
+stub-write + event-emit orchestration; Epic 3 stories hang plugin
+invocation (URL fetch, PDF parse, image OCR) off the coordinator.
+
+**Plugin interface (loader, asyncio isolation, contract tests) is still to
+be authored in Story 8.1.** Until then, built-in ingest lives inside
 `src/latestnews/ingest/`.
 
 ## How to add an LLM provider

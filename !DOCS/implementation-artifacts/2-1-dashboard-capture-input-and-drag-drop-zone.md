@@ -1,6 +1,6 @@
 # Story 2.1: Dashboard capture input and drag-drop zone
 
-Status: review
+Status: done
 
 ## Story
 

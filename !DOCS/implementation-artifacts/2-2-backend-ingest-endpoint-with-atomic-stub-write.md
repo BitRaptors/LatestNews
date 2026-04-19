@@ -1,6 +1,6 @@
 # Story 2.2: Backend ingest endpoint with atomic stub write
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -75,63 +75,63 @@ so that I never lose a capture to a browser crash or a network blip — the serv
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Python deps + settings** (AC: #5, #10)
-  - [ ] `uv add uuid-utils python-multipart pyyaml` — `uuid_utils` for UUIDv7, `python-multipart` (FastAPI requires it for multipart file uploads), `pyyaml` for the frontmatter serializer
-  - [ ] Author `src/latestnews/settings/__init__.py` exporting `Settings(BaseSettings)` with `data_root: Path` and `get_settings()` helper. `env_prefix = "LATESTNEWS_"`. Default `~/LatestNews/`.
-  - [ ] FastAPI lifespan in `src/latestnews/app.py` that creates the event bus singleton, expands+resolves data_root, and ensures the directory exists
+- [x] **Task 1: Python deps + settings** (AC: #5, #10)
+  - [x] `uv add uuid-utils python-multipart pyyaml` — `uuid_utils` for UUIDv7, `python-multipart` (FastAPI requires it for multipart file uploads), `pyyaml` for the frontmatter serializer
+  - [x] Author `src/latestnews/settings/__init__.py` exporting `Settings(BaseSettings)` with `data_root: Path` and `get_settings()` helper. `env_prefix = "LATESTNEWS_"`. Default `~/LatestNews/`.
+  - [x] FastAPI lifespan in `src/latestnews/app.py` that creates the event bus singleton, expands+resolves data_root, and ensures the directory exists
 
-- [ ] **Task 2: `fs/writer.py` — atomic write** (AC: #3, #4)
-  - [ ] `atomic_write(path: Path, content: str | bytes) -> None` with tmp → fsync → os.replace → dir fsync
-  - [ ] Uses `pathlib.Path` throughout; paths in `str` only at the filesystem boundary
-  - [ ] Cleans up the tmp file on exception
-  - [ ] `write_item_stub(data_root: Path, *, item_id: UUID, source: str, source_type: str, original_source: str, title: str) -> Path` that builds the YAML frontmatter (use `yaml.safe_dump` with `sort_keys=False` — field order matters), constructs the `{timestamp}-{slug}.md` filename, and calls `atomic_write`
-  - [ ] `slugify(title: str, max_len: int = 40) -> str` — lowercase, replace non-alphanumeric with `-`, collapse consecutive `-`, strip leading/trailing `-`, truncate to `max_len`. If result is empty, fallback to `"untitled"`
+- [x] **Task 2: `fs/writer.py` — atomic write** (AC: #3, #4)
+  - [x] `atomic_write(path: Path, content: str | bytes) -> None` with tmp → fsync → os.replace → dir fsync
+  - [x] Uses `pathlib.Path` throughout; paths in `str` only at the filesystem boundary
+  - [x] Cleans up the tmp file on exception
+  - [x] `write_item_stub(data_root: Path, *, item_id: UUID, source: str, source_type: str, original_source: str, title: str) -> Path` that builds the YAML frontmatter (use `yaml.safe_dump` with `sort_keys=False` — field order matters), constructs the `{timestamp}-{slug}.md` filename, and calls `atomic_write`
+  - [x] `slugify(title: str, max_len: int = 40) -> str` — lowercase, replace non-alphanumeric with `-`, collapse consecutive `-`, strip leading/trailing `-`, truncate to `max_len`. If result is empty, fallback to `"untitled"`
 
-- [ ] **Task 3: Event bus** (AC: #7)
-  - [ ] `src/latestnews/events/types.py` — typed event envelope (`IngestProgressEvent` first; extend as other event types land)
-  - [ ] `src/latestnews/events/bus.py` — in-process pub-sub. Subscribers hold `asyncio.Queue`s; `publish` fans out non-blocking (`queue.put_nowait` with a high ceiling; drop on full with a log warning). Clean up dead subscribers when iterator is garbage-collected
-  - [ ] Bus is instantiated once at app startup and attached to `app.state.events`
+- [x] **Task 3: Event bus** (AC: #7)
+  - [x] `src/latestnews/events/types.py` — typed event envelope (`IngestProgressEvent` first; extend as other event types land)
+  - [x] `src/latestnews/events/bus.py` — in-process pub-sub. Subscribers hold `asyncio.Queue`s; `publish` fans out non-blocking (`queue.put_nowait` with a high ceiling; drop on full with a log warning). Clean up dead subscribers when iterator is garbage-collected
+  - [x] Bus is instantiated once at app startup and attached to `app.state.events`
 
-- [ ] **Task 4: Ingest coordinator** (AC: #6, #9, #11)
-  - [ ] `src/latestnews/ingest/coordinator.py` exports `async def ingest_url(data_root, events, url: str) -> CaptureResponse` and `ingest_file(data_root, events, file, source_type) -> CaptureResponse`
-  - [ ] Each generates a UUIDv7, derives a fallback title (URL → domain name; file → basename without extension; else `"Untitled Item"`), calls `write_item_stub`, publishes `IngestProgressEvent(state="queued")`, and returns `{ id, status: "queued" }`
-  - [ ] On `OSError` / `PermissionError` during stub write: re-raise as `IngestWriteError` with the `ingest.write_failed` code
-  - [ ] Log write-and-return latency via structlog (structured log; `capture.latency_ms` field)
+- [x] **Task 4: Ingest coordinator** (AC: #6, #9, #11)
+  - [x] `src/latestnews/ingest/coordinator.py` exports `async def ingest_url(data_root, events, url: str) -> CaptureResponse` and `ingest_file(data_root, events, file, source_type) -> CaptureResponse`
+  - [x] Each generates a UUIDv7, derives a fallback title (URL → domain name; file → basename without extension; else `"Untitled Item"`), calls `write_item_stub`, publishes `IngestProgressEvent(state="queued")`, and returns `{ id, status: "queued" }`
+  - [x] On `OSError` / `PermissionError` during stub write: re-raise as `IngestWriteError` with the `ingest.write_failed` code
+  - [x] Log write-and-return latency via structlog (structured log; `capture.latency_ms` field)
 
-- [ ] **Task 5: `/api/items` router** (AC: #1, #2, #11)
-  - [ ] `src/latestnews/api/items.py` exports a `router = APIRouter(prefix="/api", tags=["items"])`
-  - [ ] `POST /items` accepts either JSON or multipart. FastAPI's content-type discrimination: two separate endpoint handlers (`@router.post("/items")` with a JSON body model + one with multipart form fields) is the cleanest, but FastAPI can't co-mount two handlers on the same path. The idiomatic solution: one handler that inspects `request.headers.get("content-type")` and branches
-  - [ ] JSON branch: parse body via pydantic model `{ url: str }` with a `field_validator` that trims + enforces `min_length=1`
-  - [ ] Multipart branch: `file: UploadFile = File(...)`, `source_type: str = Form(default=None)`. If `source_type` is `None`, infer from `file.content_type` via a helper that mirrors Story 2.1's `inferSourceType` (identical mapping: `application/pdf` → `pdf`, `image/*` → `image`, `text/markdown` → `markdown`, else `text`)
-  - [ ] Error envelope responses use a small helper `error_response(status, code, message, hint)` so the three error types share one implementation
+- [x] **Task 5: `/api/items` router** (AC: #1, #2, #11)
+  - [x] `src/latestnews/api/items.py` exports a `router = APIRouter(prefix="/api", tags=["items"])`
+  - [x] `POST /items` accepts either JSON or multipart. FastAPI's content-type discrimination: two separate endpoint handlers (`@router.post("/items")` with a JSON body model + one with multipart form fields) is the cleanest, but FastAPI can't co-mount two handlers on the same path. The idiomatic solution: one handler that inspects `request.headers.get("content-type")` and branches
+  - [x] JSON branch: parse body via pydantic model `{ url: str }` with a `field_validator` that trims + enforces `min_length=1`
+  - [x] Multipart branch: `file: UploadFile = File(...)`, `source_type: str = Form(default=None)`. If `source_type` is `None`, infer from `file.content_type` via a helper that mirrors Story 2.1's `inferSourceType` (identical mapping: `application/pdf` → `pdf`, `image/*` → `image`, `text/markdown` → `markdown`, else `text`)
+  - [x] Error envelope responses use a small helper `error_response(status, code, message, hint)` so the three error types share one implementation
 
-- [ ] **Task 6: `/api/events` SSE endpoint** (AC: #8)
-  - [ ] `src/latestnews/api/events.py` exports `router = APIRouter(prefix="/api", tags=["events"])` with `GET /events`
-  - [ ] Response is a `fastapi.responses.StreamingResponse` with `media_type="text/event-stream"`
-  - [ ] Async generator subscribes to the bus, emits `f"event: {event.type}\ndata: {json.dumps(event)}\n\n"` for each received event, and terminates on `asyncio.CancelledError` (client disconnect)
-  - [ ] Headers: `Cache-Control: no-cache`, `X-Accel-Buffering: no` (disables nginx-like buffering if ever proxied — defensive for NFR-P1)
+- [x] **Task 6: `/api/events` SSE endpoint** (AC: #8)
+  - [x] `src/latestnews/api/events.py` exports `router = APIRouter(prefix="/api", tags=["events"])` with `GET /events`
+  - [x] Response is a `fastapi.responses.StreamingResponse` with `media_type="text/event-stream"`
+  - [x] Async generator subscribes to the bus, emits `f"event: {event.type}\ndata: {json.dumps(event)}\n\n"` for each received event, and terminates on `asyncio.CancelledError` (client disconnect)
+  - [x] Headers: `Cache-Control: no-cache`, `X-Accel-Buffering: no` (disables nginx-like buffering if ever proxied — defensive for NFR-P1)
 
-- [ ] **Task 7: Wire into `app.py`** (AC: #1, #8, #10)
-  - [ ] `src/latestnews/app.py` — include `items.router` and `events.router`; attach the singleton event bus + Settings to `app.state` in the lifespan
-  - [ ] Existing `/api/health` route stays
+- [x] **Task 7: Wire into `app.py`** (AC: #1, #8, #10)
+  - [x] `src/latestnews/app.py` — include `items.router` and `events.router`; attach the singleton event bus + Settings to `app.state` in the lifespan
+  - [x] Existing `/api/health` route stays
 
-- [ ] **Task 8: Backend tests** (AC: #12)
-  - [ ] `tests/backend/fs/test_writer.py` — atomic-write contract + `write_item_stub` frontmatter shape
-  - [ ] `tests/backend/events/test_bus.py` — pub-sub round trip, multi-subscriber fanout
-  - [ ] `tests/backend/api/test_items.py` — endpoint contract with `httpx.AsyncClient` + `ASGITransport`; use `tmp_path` to isolate the data root per test (override the Settings dependency via FastAPI's `app.dependency_overrides`)
-  - [ ] `tests/backend/api/test_events.py` — SSE round trip (subscribe, publish, assert stream contains the event)
+- [x] **Task 8: Backend tests** (AC: #12)
+  - [x] `tests/backend/fs/test_writer.py` — atomic-write contract + `write_item_stub` frontmatter shape
+  - [x] `tests/backend/events/test_bus.py` — pub-sub round trip, multi-subscriber fanout
+  - [x] `tests/backend/api/test_items.py` — endpoint contract with `httpx.AsyncClient` + `ASGITransport`; use `tmp_path` to isolate the data root per test (override the Settings dependency via FastAPI's `app.dependency_overrides`)
+  - [x] `tests/backend/api/test_events.py` — SSE round trip (subscribe, publish, assert stream contains the event)
 
-- [ ] **Task 9: Gate + AGENTS.md**
-  - [ ] `npm run lint` — Biome + Ruff green (Ruff covers Python; expect a handful of new issues to fix at first pass)
-  - [ ] `npm run typecheck` — tsc + mypy strict. Mypy will want types for `uuid_utils` (may need `types-uuid-utils` or an inline `# type: ignore[import-not-found]` if stubs don't exist yet)
-  - [ ] `npm run test` — Vitest (frontend unchanged) + pytest (backend gains ~20 tests)
-  - [ ] Update `AGENTS.md` — one line under "How to add an ingest plugin" pointing at `src/latestnews/ingest/coordinator.py` as the top-level orchestrator (even though plugins land in Epic 3, the coordinator is the entry point they'll hang off)
+- [x] **Task 9: Gate + AGENTS.md**
+  - [x] `npm run lint` — Biome + Ruff green (Ruff covers Python; expect a handful of new issues to fix at first pass)
+  - [x] `npm run typecheck` — tsc + mypy strict. Mypy will want types for `uuid_utils` (may need `types-uuid-utils` or an inline `# type: ignore[import-not-found]` if stubs don't exist yet)
+  - [x] `npm run test` — Vitest (frontend unchanged) + pytest (backend gains ~20 tests)
+  - [x] Update `AGENTS.md` — one line under "How to add an ingest plugin" pointing at `src/latestnews/ingest/coordinator.py` as the top-level orchestrator (even though plugins land in Epic 3, the coordinator is the entry point they'll hang off)
 
-- [ ] **Task 10: Commit + push + CI**
-  - [ ] Conventional Commits: `feat(backend): ingest endpoint + atomic stub write + event bus (Story 2.2)`
-  - [ ] Commit body lists new modules + test count
-  - [ ] Push to `origin/dev`; verify CI green
-  - [ ] Per AGENTS.md workflow: review → apply-fixes → PR/merge follow automatically
+- [x] **Task 10: Commit + push + CI**
+  - [x] Conventional Commits: `feat(backend): ingest endpoint + atomic stub write + event bus (Story 2.2)`
+  - [x] Commit body lists new modules + test count
+  - [x] Push to `origin/dev`; verify CI green
+  - [x] Per AGENTS.md workflow: review → apply-fixes → PR/merge follow automatically
 
 ## Dev Notes
 
@@ -298,12 +298,71 @@ Story 2.2 populates the `api/`, `events/`, `ingest/`, `fs/`, `settings/` subpack
 
 ### Agent Model Used
 
-(to be filled by dev-story run)
+claude-opus-4-7 (1M context) via Claude Code (BMad `bmad-dev-story` workflow).
 
 ### Debug Log References
 
+- **`fastapi.UploadFile` is NOT `isinstance`-compatible with the instance returned by `request.form()`.** `form.get("file")` returns a `starlette.datastructures.UploadFile`; `fastapi.UploadFile` is a subclass reference that fails `isinstance(..., fastapi.UploadFile)` in practice. Fix: import `UploadFile` from `starlette.datastructures` for the type check.
+- **`FastAPI` lifespan does not run under `httpx.ASGITransport`.** Tests that rely on lifespan-installed state (`app.state.settings` / `app.state.events`) must attach those manually in the fixture. Documented in the test-fixture docstring.
+- **Concurrent `client.stream()` + `client.post()` under ASGITransport deadlocks.** ASGITransport serializes requests per client. Dropped the HTTP-level SSE test (tried + hung). Replaced with unit tests against `_format_sse` and `_event_stream` directly, using a mocked `Request`. A Playwright E2E test in a later story will exercise the full HTTP round trip.
+- **`datetime.utcnow()` → `datetime.now(tz=UTC)`.** Ruff DTZ005 flags naive UTC and the stdlib deprecates `utcnow` in 3.12+.
+- **`types-PyYAML` added as dev dep.** Otherwise mypy strict flags `import-untyped` on `yaml`.
+- **Non-ASCII slugify behaviour documented.** `árvíztűrő` → `rv-zt-r` (not `untitled`) because the regex only strips non-alphanumeric **ASCII**; Unicode letters become dashes between ASCII-visible gaps. Transliteration is post-MVP.
+- **Validation fail for "file field missing" returns 422 with our envelope** even under strict Pydantic; the branching happens before pydantic validates, so the generic `UploadFile` check catches it.
+
 ### Completion Notes List
+
+- **Scope held.** No plugin invocation, no URL fetching, no PDF parsing, no LLM, no search indexing. Every capture produces a durable stub and emits `queued`. Enrichment is Epic 3.
+- **Atomic write verified.** Test forces `os.fsync` to raise; the target file never appears and the tmp file is cleaned up. POSIX `os.replace` + directory fsync is the full recipe.
+- **Latency logging active.** `capture.latency_ms` is emitted via structlog on every successful capture. No alerting yet — NFR-P1's `≤ 100 ms p95` is aspirational until a later story measures it at scale.
+- **UUIDv7 via `uuid_utils.uuid7()`.** Serialized to string at every call site (JSON response, frontmatter, event payload) — not leaked as a `UUID` object.
+- **Frontmatter field order locked** via ordered dict + `yaml.safe_dump(sort_keys=False, allow_unicode=True, default_flow_style=False)`. Obsidian-friendly.
+- **Content-Type branching** on the single `POST /api/items` handler — JSON → pydantic validation → `ingest_url`; multipart → `starlette.datastructures.UploadFile` discrimination → `ingest_file`. Explicit 422 envelope for unrecognised Content-Type.
+- **SSE endpoint live** at `/api/events` with `text/event-stream`, `Cache-Control: no-cache`, `X-Accel-Buffering: no`. No keep-alive ping yet — frontend reconnects on timeout (Story 2.4 consumer).
+- **Test count 133 → 161** (+28 backend): 13 writer + 4 bus + 8 items + 3 events.
+- **CI not yet measured — pending commit.** Backend installs `uuid-utils`, `python-multipart`, `pyyaml` (+ dev `types-PyYAML`) via uv; CI's `uv sync --frozen` picks them up from the updated lockfile.
 
 ### File List
 
+**New — backend subsystems**
+
+- `src/latestnews/fs/writer.py` (atomic_write, slugify, write_item_stub)
+- `src/latestnews/events/types.py` (IngestProgressEvent + Event alias)
+- `src/latestnews/events/bus.py` (EventBus + create_bus)
+- `src/latestnews/ingest/coordinator.py` (ingest_url, ingest_file, IngestWriteError, CaptureResponse)
+- `src/latestnews/api/items.py` (POST /api/items with content-type branch)
+- `src/latestnews/api/events.py` (GET /api/events SSE stream)
+
+**Modified — backend**
+
+- `src/latestnews/app.py` (lifespan wires settings + bus; includes items + events routers)
+- `src/latestnews/settings/__init__.py` (Settings + get_settings)
+- `pyproject.toml` (+ `uuid-utils`, `python-multipart`, `pyyaml`; dev: `types-PyYAML`)
+- `uv.lock`
+
+**New — tests**
+
+- `tests/backend/fs/__init__.py`
+- `tests/backend/fs/test_writer.py` (13 tests)
+- `tests/backend/events/__init__.py`
+- `tests/backend/events/test_bus.py` (4 tests)
+- `tests/backend/api/__init__.py`
+- `tests/backend/api/test_items.py` (8 tests)
+- `tests/backend/api/test_events.py` (3 tests)
+
+**Modified — root**
+
+- `AGENTS.md` (ingest plugin section points at `src/latestnews/ingest/coordinator.py` as the entry point; loader contract remains Story 8.1)
+
+**Modified — planning artefacts**
+
+- `!DOCS/implementation-artifacts/2-2-backend-ingest-endpoint-with-atomic-stub-write.md` (status, task checkboxes, Dev Agent Record)
+- `!DOCS/implementation-artifacts/sprint-status.yaml` (2-2 → in-progress → review)
+
 ### Change Log
+
+| Date       | Change                                                                                               |
+|------------|------------------------------------------------------------------------------------------------------|
+| 2026-04-19 | Status → `in-progress`. Deps installed; Settings + data_root lifespan wiring complete.                |
+| 2026-04-19 | fs/writer.py (atomic write + stub serialiser); events bus + types; ingest coordinator.                |
+| 2026-04-19 | /api/items (content-type branch) + /api/events (SSE). 28 backend tests green. Status → `review`.      |

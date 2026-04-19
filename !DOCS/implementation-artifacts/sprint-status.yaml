@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-18
-last_updated: 2026-04-19  # story 2.1 done; story 2.2 created → ready-for-dev
+last_updated: 2026-04-19  # story 2.2 → review
 project: LatestNews
 project_key: NOKEY
 tracking_system: file-system
@@ -54,7 +54,7 @@ development_status:
   # Epic 2: Frictionless Capture
   epic-2: in-progress
   2-1-dashboard-capture-input-and-drag-drop-zone: done
-  2-2-backend-ingest-endpoint-with-atomic-stub-write: ready-for-dev
+  2-2-backend-ingest-endpoint-with-atomic-stub-write: review
   2-3-global-cmd-v-paste-handler-with-focus-discrimination: backlog
   2-4-inline-5-state-ingest-visualization-on-itemcard: backlog
   2-5-error-state-retry-action-and-soft-toast-system: backlog

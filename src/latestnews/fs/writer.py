@@ -19,14 +19,16 @@ never visible in a partially-written state.
 
 from __future__ import annotations
 
+import contextlib
 import os
 import random
 import re
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Final
 
 import yaml
+
+from latestnews._time import utc_now_filename_stamp, utc_now_iso_millis
 
 _TMP_PREFIX: Final = "."
 _TMP_SUFFIX_TEMPLATE: Final = ".tmp.{pid}.{rand}"
@@ -77,8 +79,6 @@ def atomic_write(path: Path, content: str | bytes) -> None:
     except BaseException:
         # Best-effort cleanup of the tmp file on any failure (including
         # KeyboardInterrupt). The target stays untouched.
-        import contextlib
-
         with contextlib.suppress(OSError):
             tmp.unlink(missing_ok=True)
         raise
@@ -104,21 +104,6 @@ def slugify(title: str, max_len: int = 40) -> str:
     truncated = trimmed[:max_len]
     cleaned = _SLUG_TRIM.sub("", truncated)
     return cleaned or "untitled"
-
-
-_TIMESTAMP_FORMAT: Final = "%Y%m%dT%H%M%SZ"
-
-
-def _utc_now_filename_stamp() -> str:
-    return datetime.now(tz=UTC).strftime(_TIMESTAMP_FORMAT)
-
-
-def _utc_now_iso_millis() -> str:
-    """ISO 8601 UTC with millisecond precision + `Z` suffix."""
-    now = datetime.now(tz=UTC)
-    # isoformat(timespec="milliseconds") → `2026-04-19T12:34:56.789+00:00`
-    iso = now.isoformat(timespec="milliseconds")
-    return iso.replace("+00:00", "Z")
 
 
 def _build_frontmatter(
@@ -164,8 +149,8 @@ def write_item_stub(
     at call time. The stub filename is `{YYYYmmddTHHMMSSZ}-{slug}.md` in
     `data_root`.
     """
-    created_at = _utc_now_iso_millis()
-    filename = f"{_utc_now_filename_stamp()}-{slugify(title)}.md"
+    created_at = utc_now_iso_millis()
+    filename = f"{utc_now_filename_stamp()}-{slugify(title)}.md"
     target = data_root / filename
     content = _build_frontmatter(
         item_id=item_id,

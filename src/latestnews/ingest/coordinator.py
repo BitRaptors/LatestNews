@@ -9,7 +9,6 @@ queued` so future consumers can subscribe before the real pipeline exists.
 from __future__ import annotations
 
 import time
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlparse
@@ -17,6 +16,7 @@ from urllib.parse import urlparse
 import structlog
 import uuid_utils
 
+from latestnews._time import utc_now_iso_millis
 from latestnews.events.bus import EventBus
 from latestnews.events.types import IngestProgressEvent
 from latestnews.fs.writer import write_item_stub
@@ -59,16 +59,11 @@ def _fallback_title_from_filename(filename: str | None) -> str:
     return stem or "Untitled Item"
 
 
-def _iso_now() -> str:
-    iso = datetime.now(tz=UTC).isoformat(timespec="milliseconds")
-    return iso.replace("+00:00", "Z")
-
-
 async def _emit_queued(bus: EventBus, item_id: str) -> None:
     event: IngestProgressEvent = {
         "type": "ingest.progress",
         "payload": {"item_id": item_id, "state": "queued"},
-        "meta": {"timestamp": _iso_now()},
+        "meta": {"timestamp": utc_now_iso_millis()},
     }
     await bus.publish(event)
 
@@ -136,6 +131,10 @@ async def ingest_file(
         raise IngestWriteError(str(exc)) from exc
 
     latency_ms = (time.perf_counter() - started) * 1000.0
+    # NOTE: Story 2.2 persists the stub only — the uploaded file body is
+    # intentionally discarded. Plugin stories (Epic 3) receive the bytes
+    # directly via the ingest pipeline. Log it so nobody mistakes the
+    # missing payload for a bug.
     _log.info(
         "capture.received",
         item_id=item_id,
@@ -144,6 +143,7 @@ async def ingest_file(
         filename=filename,
         path=str(path),
         latency_ms=round(latency_ms, 2),
+        file_body_discarded=True,
     )
     await _emit_queued(events, item_id)
     return CaptureResponse(id=item_id, status="queued")

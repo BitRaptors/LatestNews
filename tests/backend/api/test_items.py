@@ -11,7 +11,7 @@ from httpx import ASGITransport, AsyncClient
 
 from latestnews.app import create_app
 from latestnews.events.bus import create_bus
-from latestnews.settings import Settings, get_settings
+from latestnews.settings import Settings
 
 
 @pytest.fixture()
@@ -23,16 +23,15 @@ def data_root(tmp_path: Path) -> Path:
 def app_with_tmp_root(data_root: Path) -> Iterator:
     """FastAPI app with Settings + EventBus injected for tests.
 
-    Starlette only runs the app's lifespan when ASGI serves it — under
-    `ASGITransport` (httpx) it is **not** invoked, so `app.state.events`
-    stays unset unless we attach it manually. Mirror the lifespan's setup.
+    `app.state` is the source of truth for the handler — it reads
+    `request.app.state.settings` / `request.app.state.events` directly
+    (no `Depends(get_settings)`). Starlette's lifespan is NOT invoked
+    under `httpx.ASGITransport`, so we populate state manually.
     """
     app = create_app()
-    app.dependency_overrides[get_settings] = lambda: Settings(data_root=data_root)
     app.state.settings = Settings(data_root=data_root)
     app.state.events = create_bus()
     yield app
-    app.dependency_overrides.clear()
 
 
 async def _client(app) -> AsyncClient:

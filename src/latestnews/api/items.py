@@ -12,10 +12,10 @@ Errors follow the architecture's envelope:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, StringConstraints, ValidationError
 from starlette.datastructures import UploadFile
 
 from latestnews.events.bus import EventBus
@@ -36,9 +36,15 @@ router = APIRouter(prefix="/api", tags=["items"])
 
 
 class CaptureUrlBody(BaseModel):
-    """JSON body shape for URL / text captures."""
+    """JSON body shape for URL / text captures.
 
-    url: str = Field(..., min_length=1)
+    `StringConstraints(strip_whitespace=True, min_length=1)` collapses the
+    two 422 paths (empty vs whitespace-only) into one: pydantic trims first,
+    then applies the length check. No need for a post-parse re-strip in the
+    handler.
+    """
+
+    url: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 
 # ---------------------------------------------------------------------------
@@ -171,16 +177,7 @@ async def _handle_json(
             hint="Provide a non-empty `url` string.",
         ) from exc
 
-    url = body.url.strip()
-    if not url:
-        raise _error_envelope(
-            422,
-            code="ingest.validation_failed",
-            message="url must not be blank.",
-            hint="Provide a non-empty `url` string.",
-        )
-
-    return await ingest_url(data_root=data_root, events=events, url=url)
+    return await ingest_url(data_root=data_root, events=events, url=body.url)
 
 
 async def _handle_multipart(

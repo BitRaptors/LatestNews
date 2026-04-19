@@ -74,16 +74,17 @@ afterEach(() => {
 // ---------------------------------------------------------------------------
 
 describe('useGlobalPasteHandler', () => {
-  test('paste on document.body with text POSTs JSON to /api/items', async () => {
+  test('paste on document.body with text POSTs JSON + calls preventDefault', async () => {
     const fetchMock = stubFetchOk()
     render(<TestHost />)
 
+    const event = makePasteEvent(document.body, 'https://example.com/a')
     await act(async () => {
-      const event = makePasteEvent(document.body, 'https://example.com/a')
       document.dispatchEvent(event)
       await new Promise((r) => setTimeout(r, 0))
     })
 
+    expect(event.defaultPrevented).toBe(true)
     expect(fetchMock).toHaveBeenCalledTimes(1)
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
     expect(url).toBe('/api/items')
@@ -173,5 +174,18 @@ describe('useGlobalPasteHandler', () => {
 
     expect(warnSpy).toHaveBeenCalled()
     expect(toast.success).not.toHaveBeenCalled()
+  })
+
+  test('listener unbinds on unmount — no fetch after the component goes away', async () => {
+    const fetchMock = stubFetchOk()
+    const { unmount } = render(<TestHost />)
+    unmount()
+
+    await act(async () => {
+      document.dispatchEvent(makePasteEvent(document.body, 'https://example.com'))
+      await new Promise((r) => setTimeout(r, 0))
+    })
+
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })

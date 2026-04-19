@@ -26,7 +26,8 @@ no cloud, no account. Obsidian opens the data root as a valid vault.
   - `web/src/components/ui/` — tokenized shadcn/ui foundation primitives (Button, Dialog, Input, Toast, …).
   - `web/src/app/` — AppShell + global keyboard shortcut hook + theme toggle + help overlay.
   - `web/src/routes/` — top-level route modules (`dashboard`, `explore`, `settings`, `not-found`).
-  - `web/src/lib/` — pure utilities (`cn` helper, etc.).
+  - `web/src/features/` — feature-scoped composition (e.g. `capture/`; later `chat/`, `search/`, `explore/`). Features own their own components, hooks, client helpers, and tests.
+  - `web/src/lib/` — pure utilities (`cn` helper, `isEditableTarget`, etc.).
   - `web/src/router.tsx` — React Router v7 route table (single source of truth for navigation).
 - `src/latestnews/` — Python 3.12 + FastAPI backend (async, uv-managed).
   - `api/` — HTTP routers under `/api/*`.

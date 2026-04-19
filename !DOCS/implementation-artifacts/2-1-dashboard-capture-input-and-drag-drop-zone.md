@@ -1,6 +1,6 @@
 # Story 2.1: Dashboard capture input and drag-drop zone
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -54,60 +54,60 @@ so that I can paste URLs or drop files without any setup or decision — the fir
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Project structure + lift shared DOM helper** (AC: #10)
-  - [ ] Create `web/src/features/capture/` directory (first feature subtree under `features/`). Add to AGENTS.md in T10.
-  - [ ] Extract `isEditableTarget` from `web/src/app/useGlobalShortcuts.ts` into `web/src/lib/dom.ts` (new). Re-import both from `useGlobalShortcuts` and the forthcoming `DropZone`. Reduces drift between the two input-discrimination sites.
+- [x] **Task 1: Project structure + lift shared DOM helper** (AC: #10)
+  - [x] Create `web/src/features/capture/` directory (first feature subtree under `features/`). Add to AGENTS.md in T10.
+  - [x] Extract `isEditableTarget` from `web/src/app/useGlobalShortcuts.ts` into `web/src/lib/dom.ts` (new). Re-import both from `useGlobalShortcuts` and the forthcoming `DropZone`. Reduces drift between the two input-discrimination sites.
 
-- [ ] **Task 2: Zod schema + shared types** (AC: #4, #8)
-  - [ ] `cd web && npm install zod` (installed as shadcn transitive dep in Story 1.4; verify present)
-  - [ ] Create `web/src/features/capture/types.ts` exporting `ItemsPostUrlSchema = z.object({ url: z.string().min(1).trim() })` and a `SourceType = 'pdf' | 'image' | 'markdown' | 'text'` union with `inferSourceType(mime: string): SourceType` helper.
+- [x] **Task 2: Zod schema + shared types** (AC: #4, #8)
+  - [x] `cd web && npm install zod` (installed as shadcn transitive dep in Story 1.4; verify present)
+  - [x] Create `web/src/features/capture/types.ts` exporting `ItemsPostUrlSchema = z.object({ url: z.string().min(1).trim() })` and a `SourceType = 'pdf' | 'image' | 'markdown' | 'text'` union with `inferSourceType(mime: string): SourceType` helper.
 
-- [ ] **Task 3: `postCaptureUrl` / `postCaptureFile` client helpers** (AC: #4, #8, #9)
-  - [ ] `web/src/features/capture/postCapture.ts` exporting two async functions
-  - [ ] `postCaptureUrl(url: string): Promise<Response>` — `fetch('/api/items', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) })`
-  - [ ] `postCaptureFile(file: File): Promise<Response>` — builds `FormData` with `file` + `source_type` from `inferSourceType(file.type)`; `fetch('/api/items', { method: 'POST', body: formData })` (no manual `Content-Type` — browser sets the boundary)
-  - [ ] Both throw on non-2xx (`!response.ok`). Callers handle.
+- [x] **Task 3: `postCaptureUrl` / `postCaptureFile` client helpers** (AC: #4, #8, #9)
+  - [x] `web/src/features/capture/postCapture.ts` exporting two async functions
+  - [x] `postCaptureUrl(url: string): Promise<Response>` — `fetch('/api/items', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) })`
+  - [x] `postCaptureFile(file: File): Promise<Response>` — builds `FormData` with `file` + `source_type` from `inferSourceType(file.type)`; `fetch('/api/items', { method: 'POST', body: formData })` (no manual `Content-Type` — browser sets the boundary)
+  - [x] Both throw on non-2xx (`!response.ok`). Callers handle.
 
-- [ ] **Task 4: Author `<CaptureInput />`** (AC: #1, #2, #3, #4, #5, #6)
-  - [ ] `web/src/features/capture/CaptureInput.tsx`
-  - [ ] Controlled `<input type="text">` via `useState<string>('')`
-  - [ ] `useRef` on the input + `useEffect` to call `.focus()` on mount
-  - [ ] Wrapper `<div>` with the token styles + atmospheric halo `<div aria-hidden className="pointer-events-none absolute ... bg-[image:var(--gradient-accent-vertical)] opacity-40" />`
-  - [ ] Send affordance right-aligned inside wrapper
-  - [ ] `onKeyDown`: `Enter` (and `Cmd/Ctrl+Enter`) → submit; `Escape` → clear + blur
-  - [ ] Submit handler: Zod parse, call `postCaptureUrl`, handle success/error per AC #5
-  - [ ] Disable input while submitting; spinner icon in send button
+- [x] **Task 4: Author `<CaptureInput />`** (AC: #1, #2, #3, #4, #5, #6)
+  - [x] `web/src/features/capture/CaptureInput.tsx`
+  - [x] Controlled `<input type="text">` via `useState<string>('')`
+  - [x] `useRef` on the input + `useEffect` to call `.focus()` on mount
+  - [x] Wrapper `<div>` with the token styles + atmospheric halo `<div aria-hidden className="pointer-events-none absolute ... bg-[image:var(--gradient-accent-vertical)] opacity-40" />`
+  - [x] Send affordance right-aligned inside wrapper
+  - [x] `onKeyDown`: `Enter` (and `Cmd/Ctrl+Enter`) → submit; `Escape` → clear + blur
+  - [x] Submit handler: Zod parse, call `postCaptureUrl`, handle success/error per AC #5
+  - [x] Disable input while submitting; spinner icon in send button
 
-- [ ] **Task 5: Author `<DropZone />`** (AC: #7, #8, #9, #10)
-  - [ ] `web/src/features/capture/DropZone.tsx`
-  - [ ] `useEffect` binds `dragenter`/`dragover`/`dragleave`/`drop` to `document.body` (simplest; the AppShell `<main>` is tricky to reach from a leaf component). Guard each handler with `isEditableTarget(event.target)` — bail on true.
-  - [ ] Track `isDragging` + a debounced `setIsDragging(false)` via a ref-based counter so nested `dragenter`/`dragleave` pairs don't flicker
-  - [ ] Render the overlay with `data-state={isDragging ? 'open' : 'closed'}` and the transition classes from AC #7
-  - [ ] Drop handler: `event.preventDefault()`; if `files.length > 0` iterate and call `postCaptureFile` sequentially; else check `event.dataTransfer.getData('text/uri-list')` / `'text/plain'` and call `postCaptureUrl`
+- [x] **Task 5: Author `<DropZone />`** (AC: #7, #8, #9, #10)
+  - [x] `web/src/features/capture/DropZone.tsx`
+  - [x] `useEffect` binds `dragenter`/`dragover`/`dragleave`/`drop` to `document.body` (simplest; the AppShell `<main>` is tricky to reach from a leaf component). Guard each handler with `isEditableTarget(event.target)` — bail on true.
+  - [x] Track `isDragging` + a debounced `setIsDragging(false)` via a ref-based counter so nested `dragenter`/`dragleave` pairs don't flicker
+  - [x] Render the overlay with `data-state={isDragging ? 'open' : 'closed'}` and the transition classes from AC #7
+  - [x] Drop handler: `event.preventDefault()`; if `files.length > 0` iterate and call `postCaptureFile` sequentially; else check `event.dataTransfer.getData('text/uri-list')` / `'text/plain'` and call `postCaptureUrl`
 
-- [ ] **Task 6: Wire into Dashboard route** (AC: #13)
-  - [ ] Rewrite `web/src/routes/dashboard.tsx` to render `<CaptureInput />` + `<DropZone />` inside a `<main className="mx-auto max-w-3xl p-8">` wrapper; remove the Epic-2-placeholder `<p>`
-  - [ ] Add a `<p className="text-body-sm text-text-muted mt-4">Your captured items will appear here.</p>` below the input
+- [x] **Task 6: Wire into Dashboard route** (AC: #13)
+  - [x] Rewrite `web/src/routes/dashboard.tsx` to render `<CaptureInput />` + `<DropZone />` inside a `<main className="mx-auto max-w-3xl p-8">` wrapper; remove the Epic-2-placeholder `<p>`
+  - [x] Add a `<p className="text-body-sm text-text-muted mt-4">Your captured items will appear here.</p>` below the input
 
-- [ ] **Task 7: CaptureInput tests** (AC: #11)
-  - [ ] Mock `global.fetch` with `vi.spyOn(globalThis, 'fetch')` or `vi.stubGlobal('fetch', …)`
-  - [ ] Covers the 6 scenarios in AC #11; use `@testing-library/user-event` for realistic keyboard simulation
+- [x] **Task 7: CaptureInput tests** (AC: #11)
+  - [x] Mock `global.fetch` with `vi.spyOn(globalThis, 'fetch')` or `vi.stubGlobal('fetch', …)`
+  - [x] Covers the 6 scenarios in AC #11; use `@testing-library/user-event` for realistic keyboard simulation
 
-- [ ] **Task 8: DropZone tests** (AC: #12)
-  - [ ] `fireEvent.dragEnter(document.body)` + `fireEvent.dragLeave(document.body)` + `fireEvent.drop(document.body, { dataTransfer: { files: [new File([...], 'test.pdf', { type: 'application/pdf' })], types: ['Files'] } })`
-  - [ ] Mock `fetch`; assert body shape (FormData vs JSON)
-  - [ ] Drag inside an `<input>` fixture: overlay never activates
+- [x] **Task 8: DropZone tests** (AC: #12)
+  - [x] `fireEvent.dragEnter(document.body)` + `fireEvent.dragLeave(document.body)` + `fireEvent.drop(document.body, { dataTransfer: { files: [new File([...], 'test.pdf', { type: 'application/pdf' })], types: ['Files'] } })`
+  - [x] Mock `fetch`; assert body shape (FormData vs JSON)
+  - [x] Drag inside an `<input>` fixture: overlay never activates
 
-- [ ] **Task 9: Gate check + commit** (AC: #14)
-  - [ ] `npm run lint`, `npm run typecheck`, `npm run test` — all green
-  - [ ] Expected test count: 122 (1.5) + 6 + 5 = ~133. Target ≥ 130.
-  - [ ] Conventional Commits: `feat(capture): Dashboard capture input + page-wide drop zone (Story 2.1)`
-  - [ ] Push `origin/dev`; CI green
-  - [ ] Per AGENTS.md workflow: review → apply fixes → PR/merge follow automatically
+- [x] **Task 9: Gate check + commit** (AC: #14)
+  - [x] `npm run lint`, `npm run typecheck`, `npm run test` — all green
+  - [x] Expected test count: 122 (1.5) + 6 + 5 = ~133. Target ≥ 130.
+  - [x] Conventional Commits: `feat(capture): Dashboard capture input + page-wide drop zone (Story 2.1)`
+  - [x] Push `origin/dev`; CI green
+  - [x] Per AGENTS.md workflow: review → apply fixes → PR/merge follow automatically
 
-- [ ] **Task 10: AGENTS.md update** (NFR-Q4)
-  - [ ] Add `web/src/features/` bullet under `web/` in Repository layout (first feature subtree): "feature-scoped components and logic (`capture/`, later `chat/`, `search/`, …)"
-  - [ ] Add `web/src/lib/dom.ts` to the existing `web/src/lib/` bullet's description
+- [x] **Task 10: AGENTS.md update** (NFR-Q4)
+  - [x] Add `web/src/features/` bullet under `web/` in Repository layout (first feature subtree): "feature-scoped components and logic (`capture/`, later `chat/`, `search/`, …)"
+  - [x] Add `web/src/lib/dom.ts` to the existing `web/src/lib/` bullet's description
 
 ## Dev Notes
 
@@ -247,12 +247,59 @@ Also modify:
 
 ### Agent Model Used
 
-(to be filled by dev-story run)
+claude-opus-4-7 (1M context) via Claude Code (BMad `bmad-dev-story` workflow).
 
 ### Debug Log References
 
+- **`isEditableTarget` lifted to `web/src/lib/dom.ts`**. Previously sat inside `app/useGlobalShortcuts.ts`; now imported from the shared lib by both the shortcut hook and the new `DropZone`.
+- **Send button disabled on empty value.** Made the button `disabled` when `value.trim().length === 0` in addition to the Zod-guarded submit. Prevents a click-to-dead-state UX when the Enter path already blocks.
+- **Plain `<input>` + token classes, not shadcn `<Input />`.** The capture input is a bespoke composition (atmospheric halo behind, icon button inside); fighting shadcn Input's opinionated wrapper added no value.
+- **`dragenter` discrimination on payload.** Only activate the overlay when `event.dataTransfer.types` contains `Files` / `text/uri-list` / `text/plain` — prevents accidental overlay for in-page element drags (e.g. DOM element reorder tools).
+- **`userEvent.keyboard('{Escape}')` resolves fine under happy-dom 20.** No shim needed.
+- **FormData assertions in tests** — happy-dom ships a working `FormData`, so `init.body` is a real `FormData` instance we can introspect.
+
 ### Completion Notes List
+
+- **Scope held.** No backend endpoint (Story 2.2), no SSE / progress visualization (Story 2.4), no toast / retry (Story 2.5), no global Cmd-V (Story 2.3), no item list / ItemCard (later).
+- **`features/` subtree introduced** at `web/src/features/capture/` — first feature directory. AGENTS.md updated with a generic bullet ("`capture/`; later `chat/`, `search/`, `explore/`").
+- **Network calls will 502 in dev** until Story 2.2 lands the backend. Expected. Tests stub `fetch` so nothing on CI depends on it.
+- **No new runtime deps.** `zod` was already present (shadcn transitive). `motion` / React Router / fontsource untouched.
+- **Test count 122 → 132** (+6 CaptureInput + 4 DropZone).
+- **NFR coverage:** V1 (tokens everywhere), V2 (overlay + focus transitions at `duration-base`), A1 (keyboard Enter / Escape; drag-drop as secondary), A4 (global `prefers-reduced-motion` reset from Story 1.5 collapses the overlay transition), R1 (no silent data loss — failing submit leaves value intact), S1/S2 (only `/api/items` local endpoint), Q4 (AGENTS.md updated), Q6 (commit references Story 2.1).
 
 ### File List
 
+**New — capture feature subtree**
+
+- `web/src/features/capture/types.ts` (Zod schema + `SourceType` + `inferSourceType`)
+- `web/src/features/capture/postCapture.ts` (`postCaptureUrl`, `postCaptureFile`, `CaptureError`)
+- `web/src/features/capture/CaptureInput.tsx`
+- `web/src/features/capture/DropZone.tsx`
+- `web/src/features/capture/__tests__/CaptureInput.test.tsx`
+- `web/src/features/capture/__tests__/DropZone.test.tsx`
+
+**New — shared DOM helper**
+
+- `web/src/lib/dom.ts` (`isEditableTarget`)
+
+**Modified — app layer**
+
+- `web/src/app/useGlobalShortcuts.ts` (now imports `isEditableTarget` from `@/lib/dom`)
+- `web/src/routes/dashboard.tsx` (renders `<CaptureInput />` + `<DropZone />`, removes Epic-2-placeholder text)
+
+**Modified — root**
+
+- `AGENTS.md` (new `web/src/features/` bullet; `web/src/lib/` bullet mentions `isEditableTarget`)
+
+**Modified — planning artefacts**
+
+- `!DOCS/implementation-artifacts/2-1-dashboard-capture-input-and-drag-drop-zone.md` (status, task checkboxes, Dev Agent Record)
+- `!DOCS/implementation-artifacts/sprint-status.yaml` (2-1 → in-progress → review)
+
 ### Change Log
+
+| Date       | Change                                                                                              |
+|------------|-----------------------------------------------------------------------------------------------------|
+| 2026-04-19 | Status → `in-progress`. Lifted `isEditableTarget` to `lib/dom.ts`.                                   |
+| 2026-04-19 | Authored `CaptureInput` + `DropZone` + `postCapture` helpers + Zod types + 10 RTL tests.             |
+| 2026-04-19 | Dashboard route rewritten; 132 web + 1 backend tests green. Status → `review` on commit.             |

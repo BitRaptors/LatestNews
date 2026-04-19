@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
+import { isEditableTarget } from '@/lib/dom'
 import { isPlatformShortcut } from './platform'
 
 type Options = {
@@ -11,13 +12,6 @@ const ROUTE_BY_DIGIT: Record<string, string> = {
   '1': '/',
   '2': '/explore',
   '3': '/settings',
-}
-
-function isEditableTarget(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false
-  if (target.isContentEditable) return true
-  const tag = target.tagName
-  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'
 }
 
 /**

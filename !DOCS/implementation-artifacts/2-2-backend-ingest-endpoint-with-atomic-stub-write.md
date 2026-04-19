@@ -1,6 +1,6 @@
 # Story 2.2: Backend ingest endpoint with atomic stub write
 
-Status: review
+Status: done
 
 ## Story
 

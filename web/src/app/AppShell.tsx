@@ -8,6 +8,7 @@ import { HelpOverlay } from './HelpOverlay'
 import { KCmdAffordance } from './KCmdAffordance'
 import { NarrowViewportBanner } from './NarrowViewportBanner'
 import { ThemeToggle } from './ThemeToggle'
+import { useGlobalPasteHandler } from './useGlobalPasteHandler'
 import { useGlobalShortcuts } from './useGlobalShortcuts'
 
 const ROUTE_LABELS: Record<string, string> = {
@@ -36,6 +37,7 @@ export function AppShell() {
     onShowHelp: toggleHelp,
     onOpenPalette: openPaletteStub,
   })
+  useGlobalPasteHandler()
 
   return (
     <>
